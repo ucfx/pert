@@ -1,0 +1,58 @@
+:root {
+    --font-family: Inter,
+        system-ui,
+        Avenir,
+        Helvetica,
+        Arial,
+        sans-serif;
+
+    --color-primary: #526cff;
+    --color-primary-light: #a3a8ff;
+    --color-primary-dark: #3449c3;
+    --color-secondary: #e1e5ff;
+    --color-black: #181920;
+    --color-danger: #f56565;
+    --color-danger-light: #ffc2c2;
+    --color-danger-dark: #c24f4f;
+    --color-warning: #ecc94b;
+    --color-warning-light: #fff68f;
+    --color-warning-dark: #bea23b;
+    --color-info: #63b3ed;
+    --box-shadow-1: rgba(50, 50,
+            93,
+            .1) 0 0 0 1px inset,
+        rgba(50, 50, 93, .1) 0 2px 5px 0,
+        rgba(0, 0, 0, .07) 0 1px 1px 0;
+    --box-shadow-focus: rgba(50, 50, 93, .1) 0 0 0 1px inset,
+        rgba(50, 50, 93, .2) 0 6px 15px 0,
+        rgba(0, 0, 0, .1) 0 2px 2px 0,
+        rgba(103, 108, 255, 0.3) 0 0 0 4px;
+    ,
+
+    --text-color: var(--color-black);
+
+    --background-color: var(--color-secondary);
+
+    --button-text-color: white;
+    --button-bg-primary: var(--color-primary);
+    --button-bg-primary-hover: var(--color-primary-dark);
+    --button-bg-secondary: var(--color-secondary);
+    --button-bg-secondary-hover: var(--color-primary-dark);
+    --button-bg-danger: var(--color-danger);
+    --button-bg-danger-hover: var(--color-danger-dark);
+    --button-box-shadow: var(--box-shadw-1);
+
+    font-family: var(--font-family);
+    line-height: 1.5;
+    font-weight: 400;
+
+    color-scheme: light dark;
+    color: var(--text-color);
+    background-color: var(--background-color);
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+}
