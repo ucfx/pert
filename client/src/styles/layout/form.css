@@ -1,0 +1,141 @@
+.form-container {
+    padding: 60px 0;
+    margin: 0 auto;
+    height: 100vh;
+    display: grid;
+    place-items: center;
+}
+
+.form-container .form-content {
+    padding: 15px;
+    background: var(--color-secondary);
+    border-radius: 8px;
+    border: 2px solid var(--color-black);
+    width: 400px;
+    height: 500px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3), 0 17px 46px rgba(0, 0, 0, 0.15);
+}
+
+.form-container .form-content h1 {
+    text-align: center;
+    font-size: 33px;
+    margin: 20px 0 35px;
+}
+
+.form-container .form-content form .input-field {
+    position: relative;
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+.form-container .form-content form .input-field:not(:last-of-type) {
+    margin-bottom: 30px;
+}
+
+.form-container .form-content form .input-field.center {
+    align-items: center;
+}
+
+.form-container .form-content form .input-field:last-of-type {
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.form-container .form-content form .input-field label {
+    position: absolute;
+    padding: 0 10px;
+    width: fit-content;
+    text-align: center;
+    text-transform: capitalize;
+    border-left: 2px solid transparent;
+    border-right: 2px solid transparent;
+    top: 50%;
+    left: 30px;
+    font-size: 18px;
+    translate: 0 -50%;
+    transition: 0.2s;
+}
+
+.form-container .form-content form .input-field.valid label {
+    border-color: var(--color-black);
+    top: 0px;
+    left: 25px;
+    font-size: 14px;
+    z-index: 2;
+    background: var(--color-secondary);
+    color: var(--color-black);
+}
+
+.form-container .form-content form .input-field input {
+    padding: 0 40px;
+    height: 55px;
+    background: none;
+    border: 2px solid var(--color-black);
+    outline: none;
+    border-radius: 8px;
+    color: var(--text-color);
+    font-size: 20px;
+    z-index: 1;
+    transition: 0.2s;
+}
+
+.form-container .form-content form .input-field input:focus~label {
+    border-color: var(--color-primary);
+}
+
+.form-container .form-content form .input-field input:focus~i:not(.btn-eye) {
+    color: var(--color-primary);
+}
+
+.form-container .form-content form .input-field input:focus {
+    border-color: var(--color-primary);
+}
+
+.form-container .form-content form .input-field:hover i.btn-eye,
+.form-container .form-content form .input-field input[type="password"]:focus~i.btn-eye {
+    opacity: 1;
+}
+
+.form-container .form-content form .input-field i {
+    position: absolute;
+    top: 50%;
+    left: 15px;
+    translate: 0 -50%;
+    transition: 0.2s;
+}
+
+.form-container .form-content form .input-field i.btn-eye {
+    left: auto;
+    right: 15px;
+    z-index: 1;
+    cursor: pointer;
+    opacity: 0;
+}
+
+.form-container .form-content form .input-field a {
+    margin-left: 5px;
+    color: var(--color-primary);
+    text-decoration: none;
+}
+
+.form-container .form-content form .input-field a:hover {
+    text-decoration: underline;
+}
+
+.form-container .form-content form .input-field .input-error {
+    position: absolute;
+    bottom: -20px;
+    color: var(--text-color-danger);
+    opacity: 0;
+    transition: 0.2s;
+}
+
+.form-container .form-content form .input-field .input-error.show {
+    opacity: 1;
+}
+
+.form-container .form-content form hr {
+    width: 100%;
+    border: 1px solid var(--color-black);
+    margin-bottom: 10px;
+}

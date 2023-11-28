@@ -1,3 +1,9 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 :root {
     --font-family: Inter,
         system-ui,
@@ -11,6 +17,7 @@
     --color-primary-dark: #3449c3;
     --color-secondary: #e1e5ff;
     --color-black: #181920;
+    --color-black-light: #2e2f34;
     --color-danger: #f56565;
     --color-danger-light: #ffc2c2;
     --color-danger-dark: #c24f4f;
@@ -27,10 +34,9 @@
         rgba(50, 50, 93, .2) 0 6px 15px 0,
         rgba(0, 0, 0, .1) 0 2px 2px 0,
         rgba(103, 108, 255, 0.3) 0 0 0 4px;
-    ,
 
     --text-color: var(--color-black);
-
+    --text-color-danger: var(--color-danger-dark);
     --background-color: var(--color-secondary);
 
     --button-text-color: white;
