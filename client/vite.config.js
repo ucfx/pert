@@ -13,6 +13,7 @@ export default defineConfig({
             hooks: "/src/hooks",
             assets: "/src/assets",
             styles: "/src/styles",
+            context: "/src/context",
         },
     },
 });

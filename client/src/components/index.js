@@ -1,3 +1,3 @@
 import Button from "./Button";
-
-export { Button };
+import Loader from "./Loader";
+export { Button, Loader };
