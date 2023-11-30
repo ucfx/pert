@@ -1,0 +1,94 @@
+.pert-chart .chart svg g {
+    cursor: pointer;
+    user-select: none;
+}
+
+.pert-chart .chart svg g circle,
+.pert-chart .chart svg g text,
+.pert-chart .chart svg g path {
+    transition: 0.2s;
+}
+
+.pert-chart .chart svg>g>circle {
+    fill: #fff;
+    stroke: #181922;
+
+    &.critical {
+        fill: #ff945e;
+    }
+}
+
+
+.pert-chart .chart svg>g.to>circle {
+    stroke-width: 4px;
+    stroke: #3541df;
+    fill: #b9beff;
+}
+
+.pert-chart .chart svg>g.from>circle {
+    stroke-width: 5px;
+    stroke: #3541df;
+}
+
+.pert-chart .chart svg>g.hover>circle,
+.pert-chart .chart svg>g>circle:hover {
+    stroke-width: 5px;
+    stroke: #3541df;
+}
+
+.pert-chart .chart svg>g.selected>circle {
+    fill: #3541df;
+    stroke-width: 3px;
+}
+
+.pert-chart .chart svg>g.selected text {
+    fill: #fff;
+}
+
+.pert-chart .chart svg path:not(.hidden-path) {
+    fill: none;
+    stroke-width: 3px;
+    stroke: #a0a0bb;
+}
+
+.pert-chart .chart svg g path.split-lines {
+    stroke: #181922;
+    stroke-width: 2px;
+}
+
+.pert-chart .chart svg path.hidden-path {
+    fill: none;
+    stroke: transparent;
+    stroke-width: 13px;
+}
+
+
+.pert-chart .chart svg g path.path-hover {
+    stroke: #3541df;
+}
+
+.pert-chart .chart svg>g>g circle {
+    stroke-width: 0px;
+    fill: #8a8aad;
+    stroke: #3541df;
+}
+
+
+.pert-chart .chart svg>g.selected>g circle {
+    stroke-width: 4px;
+    fill: #3541df;
+}
+
+.pert-chart .chart svg.line-transparent g path:not(.hidden-path):not(.split-lines):not(.path-hover) {
+    stroke: transparent;
+}
+
+.pert-chart .chart svg.line-transparent>g:not(.selected)>g>circle {
+    stroke-width: 0px;
+    fill: transparent;
+}
+
+.pert-chart .chart svg.line-transparent g.selected path:not(.hidden-path):not(.split-lines) {
+    stroke-width: 5px;
+    stroke: #3541df;
+}

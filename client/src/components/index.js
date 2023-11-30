@@ -1,3 +1,4 @@
 import Button from "./Button";
 import Loader from "./Loader";
-export { Button, Loader };
+import PertChart from "./PertChart";
+export { Button, Loader, PertChart };
