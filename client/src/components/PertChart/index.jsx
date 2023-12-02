@@ -1,6 +1,5 @@
 import { useRef, useEffect, useMemo, useState } from "react";
-import Pert from "assets/js/Pert.js";
-import Drawer from "assets/js/Drawer.js";
+import { Pert, Drawer } from "assets/js";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 import "./style.css";
 
