@@ -1,3 +1,64 @@
+.pert-chart .chart {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: black;
+}
+
+.pert-chart .chart-controls {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    z-index: 1;
+}
+
+.pert-chart .chart-controls button {
+    display: inline-block;
+    width: fit-content;
+    width: 60px;
+    padding: 10px 20px;
+    border: none;
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    outline: none;
+    border-radius: 20px;
+    transition: 0.2s;
+    outline: none;
+
+    &:hover {
+        background: #181922;
+    }
+}
+
+.pert-chart .chart-controls button i {
+    font-size: 20px;
+    color: #fff;
+    transition: 0.2s;
+}
+
+
+
+.pert-chart .chart-controls button:hover i {
+    color: #8c90ff;
+}
+
+.pert-chart .chart-controls button:active i {
+    color: #646cdb;
+    font-size: 18px;
+}
+
+.pert-chart .chart svg {
+    background: #fff;
+}
+
 .pert-chart .chart svg g {
     cursor: pointer;
     user-select: none;
@@ -14,20 +75,30 @@
     stroke: #181922;
 
     &.critical {
-        fill: #ff945e;
+        fill: #ffa87d;
     }
 }
 
 
 .pert-chart .chart svg>g.to>circle {
-    stroke-width: 4px;
+    stroke-width: 3px;
     stroke: #3541df;
     fill: #b9beff;
 }
 
 .pert-chart .chart svg>g.from>circle {
-    stroke-width: 5px;
+    stroke-width: 3px;
     stroke: #3541df;
+}
+
+.pert-chart .chart svg>g.hover>.paths>g>path:not(.hidden-path),
+.pert-chart .chart svg>g>circle:hover~.paths>g>path:not(.hidden-path) {
+    stroke: #3541df;
+}
+
+.pert-chart .chart svg>g.hover>.paths>circle,
+.pert-chart .chart svg>g>circle:hover~.paths>circle {
+    fill: #3541df;
 }
 
 .pert-chart .chart svg>g.hover>circle,
@@ -91,4 +162,12 @@
 .pert-chart .chart svg.line-transparent g.selected path:not(.hidden-path):not(.split-lines) {
     stroke-width: 5px;
     stroke: #3541df;
+}
+
+.pert-chart .chart svg.line-transparent g:not(.selected):not(.to):not(.from):not(.paths)>circle {
+    opacity: 0.3;
+}
+
+.pert-chart .chart svg.line-transparent g:not(.selected):not(.to):not(.from)>text {
+    opacity: 0.8;
 }
