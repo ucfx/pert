@@ -106,12 +106,18 @@ class Pert {
             if (!this.levels[task.level]) {
                 this.levels[task.level] = [];
             }
-            this.levels[task.level].push(task.key);
+            if (!this.levels[task.level].includes(task.key)) {
+                this.levels[task.level].push(task.key);
+            }
         };
 
         nodes.forEach((task) => {
-            delete task.level;
             calcLevel(task);
+        });
+
+        let levelKeys = Object.keys(this.levels);
+        levelKeys.forEach((levelKey) => {
+            this.levels[levelKey] = this.levels[levelKey].sort((a, b) => a - b);
         });
     }
 

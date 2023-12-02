@@ -21,6 +21,7 @@ class Drawer {
 
         SvgContainer.style.width = this.maxWidth;
         SvgContainer.style.height = this.maxHeight;
+        SvgContainer.classList.remove("line-transparent");
     }
 
     drawPERTDiagram() {

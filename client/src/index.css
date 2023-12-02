@@ -62,3 +62,12 @@
     -moz-osx-font-smoothing: grayscale;
 
 }
+
+.pert-chart {
+    position: relative;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #151515;
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
