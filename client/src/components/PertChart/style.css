@@ -75,10 +75,10 @@
 .pert-chart .chart svg>g>circle {
     fill: #fff;
     stroke: #181922;
+}
 
-    &.critical {
-        fill: #ffa87d;
-    }
+.pert-chart .chart svg>g>circle.critical {
+    fill: #ffa87d;
 }
 
 

@@ -2,7 +2,13 @@
 
 class Pert {
     constructor(data) {
-        this.data = [...data];
+        this.data = [
+            { key: 0, length: 0, text: "Start" },
+            ...data.map((_) =>
+                _.dependsOn ? { ..._ } : { ..._, dependsOn: [0] }
+            ),
+        ];
+        console.log(this.data);
         this.nodes = null;
         this.levels = null;
     }
@@ -10,7 +16,6 @@ class Pert {
     calculatePERT() {
         this.nodes = null;
         this.levels = null;
-        this.links = null;
 
         this.nodes = [...this.data];
 
@@ -19,23 +24,7 @@ class Pert {
         let levelKeys = Object.keys(this.levels);
         levelKeys.forEach((levelKey) => {
             this.levels[levelKey].forEach((index) => {
-                let task = this.nodes[index];
-                if (!task.dependsOn) {
-                    task.earlyStart = 0;
-                } else {
-                    let maxFinishTime = 0;
-                    task.dependsOn.forEach((dependency) => {
-                        let dependencyTask = this.nodes.find(
-                            (item) => item.key === dependency
-                        );
-                        maxFinishTime = Math.max(
-                            maxFinishTime,
-                            dependencyTask.earlyStart + dependencyTask.length
-                        );
-                    });
-                    task.earlyStart = maxFinishTime;
-                }
-                task.earlyFinish = task.earlyStart + task.length;
+                this.calculateEarlyTimes(index);
             });
         });
 
@@ -62,26 +51,54 @@ class Pert {
 
         levelKeys.forEach((levelKey) => {
             this.levels[levelKey].forEach((index) => {
-                let task = this.nodes[index];
-                let successors = this.nodes.filter(
-                    (t) => t.dependsOn && t.dependsOn.includes(task.key)
-                );
-
-                let lateFinish;
-                if (successors.length === 0) {
-                    lateFinish = lastTask.lateFinish;
-                } else {
-                    lateFinish = Math.min(
-                        ...successors.map((s) => s.lateFinish - s.length)
-                    );
-                }
-
-                task.lateFinish = lateFinish;
-                task.lateStart = task.lateFinish - task.length;
-                task.critical = task.earlyFinish === task.lateFinish;
+                this.calculateLateTimes(index, lastTask.lateFinish);
             });
         });
         return this.nodes;
+    }
+
+    getSuccessors(task) {
+        return this.nodes.filter(
+            (t) => t.dependsOn && t.dependsOn.includes(task.key)
+        );
+    }
+
+    calculateEarlyTimes(index) {
+        let task = this.nodes[index];
+        if (!task.dependsOn) {
+            task.earlyStart = 0;
+        } else {
+            let maxFinishTime = 0;
+            task.dependsOn.forEach((dependency) => {
+                let dependencyTask = this.nodes.find(
+                    (item) => item.key === dependency
+                );
+                maxFinishTime = Math.max(
+                    maxFinishTime,
+                    dependencyTask.earlyStart + dependencyTask.length
+                );
+            });
+            task.earlyStart = maxFinishTime;
+        }
+        task.earlyFinish = task.earlyStart + task.length;
+    }
+
+    calculateLateTimes(index, lateFinishLastTask) {
+        let task = this.nodes[index];
+        let successors = this.getSuccessors(task);
+
+        let lateFinish;
+        if (successors.length === 0) {
+            lateFinish = lateFinishLastTask;
+        } else {
+            lateFinish = Math.min(
+                ...successors.map((s) => s.lateFinish - s.length)
+            );
+        }
+
+        task.lateFinish = lateFinish;
+        task.lateStart = task.lateFinish - task.length;
+        task.critical = task.earlyFinish === task.lateFinish;
     }
 
     getLevels() {
@@ -135,6 +152,8 @@ class Pert {
                 linkData.push({ from: 0, to: task.key });
             }
         });
+
+        // Add links to finish node
         this.nodes
             .filter(
                 (task) =>
