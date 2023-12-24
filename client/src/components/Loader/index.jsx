@@ -1,11 +1,16 @@
 import "./style.css";
-
+import { motion } from "framer-motion";
 const Loader = () => {
     return (
-        <div className="loader">
+        <motion.div
+            className="loader"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.2 }}
+        >
             <span></span>
             <span></span>
-        </div>
+        </motion.div>
     );
 };
 

@@ -22,12 +22,13 @@ import "./style.css";
  * <Button buttonStyle="btn--danger">Click Me</Button>
  */
 
-const Button = ({ children, onClick, type, buttonStyle }) => {
+const Button = ({ children, onClick, type, buttonStyle, disabled }) => {
     return (
         <button
             className={`btn ${buttonStyle || ""}`}
             onClick={onClick}
             type={type}
+            disabled={disabled}
         >
             {children}
         </button>

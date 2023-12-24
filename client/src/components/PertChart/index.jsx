@@ -2,14 +2,35 @@ import { useRef, useEffect, useMemo, useState } from "react";
 import { Pert, Drawer } from "assets/js";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 import "./style.css";
+function useOnScreen(ref) {
+    const [isIntersecting, setIntersecting] = useState(false);
+
+    const observer = useMemo(
+        () =>
+            new IntersectionObserver(([entry]) =>
+                setIntersecting(entry.isIntersecting)
+            ),
+        [ref]
+    );
+
+    useEffect(() => {
+        observer.observe(ref.current);
+        return () => observer.disconnect();
+    }, []);
+
+    return isIntersecting;
+}
 
 const PertChart = ({ data, containerWidth, containerHeight }) => {
     const svgElement = useRef();
+    const isOnScreen = useOnScreen(svgElement);
+    const func = useRef();
+
     const [imageNaturalWidth, setImageNaturalWidth] = useState(0);
     const [imageNaturalHeight, setImageNaturalHeight] = useState(0);
 
     const [nodes, levels, links] = useMemo(() => {
-        const pert = new Pert(data.map((item) => ({ ...item }))).solve();
+        const pert = new Pert(data).solve();
         console.log("Done");
         return [pert.nodes, pert.levels, pert.links];
     }, [JSON.stringify(data)]);
@@ -75,6 +96,14 @@ const PertChart = ({ data, containerWidth, containerHeight }) => {
         imageNaturalHeight,
     ]);
 
+    useEffect(() => {
+        if (!isOnScreen) return;
+        if (!svgElement.current) return;
+        if (!func.current) return;
+        func.current.resetTransform();
+        func.current.centerView(imageScale);
+    }, [isOnScreen]);
+
     return (
         <div className="chart">
             <TransformWrapper
@@ -86,15 +115,19 @@ const PertChart = ({ data, containerWidth, containerHeight }) => {
             >
                 {({ zoomIn, zoomOut, resetTransform, centerView }) => (
                     <>
+                        {isOnScreen &&
+                            (() => {
+                                func.current = { resetTransform, centerView };
+                            })()}
                         <div className="chart-controls">
-                            <button onClick={() => zoomIn()}>
-                                <i className="fa-regular fa-circle-plus" />
-                            </button>
                             <button onClick={() => zoomOut()}>
                                 <i className="fa-regular fa-circle-minus" />
                             </button>
                             <button onClick={() => centerView(imageScale)}>
-                                <i className="fa-regular fa-compress" />
+                                <i className="fa-regular fa-undo" />
+                            </button>
+                            <button onClick={() => zoomIn()}>
+                                <i className="fa-regular fa-circle-plus" />
                             </button>
                         </div>
                         <TransformComponent
@@ -103,15 +136,7 @@ const PertChart = ({ data, containerWidth, containerHeight }) => {
                                 height: "100%",
                             }}
                         >
-                            <svg
-                                ref={svgElement}
-                                onLoadCapture={() => {
-                                    setTimeout(() => {
-                                        resetTransform();
-                                        centerView(imageScale);
-                                    }, 400);
-                                }}
-                            />
+                            <svg ref={svgElement} />
                         </TransformComponent>
                     </>
                 )}

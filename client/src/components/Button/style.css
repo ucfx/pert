@@ -74,6 +74,8 @@
 
 .btn:disabled {
     cursor: default;
+    pointer-events: none;
+    opacity: .65;
 }
 
 .btn:focus {
