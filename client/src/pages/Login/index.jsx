@@ -1,15 +1,14 @@
 import "styles/layout/form.css";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
-import { Loader } from "components/index";
+import Button from "components/Button";
+import Loader from "components/Loader";
 import { Link } from "react-router-dom";
-import { useLogin } from "hooks/index";
-import { Button } from "components";
+import useLogin from "hooks/useLogin";
 
 const Login = () => {
     const {
         setError,
-        clearErrors,
         register,
         handleSubmit,
         formState: { errors },
@@ -35,11 +34,6 @@ const Login = () => {
             });
         }
     }, [error]);
-
-    const clearErr = () => {
-        clearErrors("password");
-        clearErrors("username");
-    };
 
     const [usernameVlaid, setUsernameValid] = useState(false);
     const [passwordVlaid, setPasswordValid] = useState(false);
@@ -76,7 +70,7 @@ const Login = () => {
                                     name="username"
                                 />
                                 <label>username</label>
-                                <i className="fa-light fa-user" />
+                                <i className="fa-regular fa-user" />
                                 <span
                                     className={`input-error ${
                                         errors?.username ? "show" : ""
@@ -109,9 +103,9 @@ const Login = () => {
                                     name="password"
                                 />
                                 <label>password</label>
-                                <i className="fa-light fa-lock" />
+                                <i className="fa-regular fa-lock" />
                                 <i
-                                    className={`fa-light fa-eye${
+                                    className={`fa-regular fa-eye${
                                         passwordInputType === "text"
                                             ? "-slash"
                                             : ""

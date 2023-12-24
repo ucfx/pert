@@ -3,63 +3,36 @@ import { createContext, useEffect, useReducer } from "react";
 
 export const AuthContext = createContext();
 
-export const AuthReducer = (state, action) => {
+export const AuthReducer = (user, action) => {
     switch (action.type) {
         case "LOGIN":
-            return {
-                ...state,
-                user: action.payload,
-            };
+            return action.payload;
+
         case "LOGOUT":
-            return {
-                ...state,
-                user: null,
-            };
+            return null;
+
         default:
-            return state;
+            return user;
     }
 };
 
 export const AuthProvider = ({ children }) => {
-    const [state, dispatch] = useReducer(AuthReducer, {
-        user: localStorage.getItem("user"),
-    });
+    const [user, dispatch] = useReducer(
+        AuthReducer,
+        JSON.parse(localStorage.getItem("user")) || null
+    );
 
-    console.log("state: ", state);
+    console.log("user: ", user);
     useEffect(() => {
-        if (state.user)
-            localStorage.setItem("user", JSON.stringify(state.user));
-        else {
+        if (user) {
+            localStorage.setItem("user", JSON.stringify(user));
+        } else {
             localStorage.removeItem("user");
         }
-    }, [state.user]);
-
-    useEffect(() => {
-        axios
-            .get("/api/auth")
-            .then((res) => {
-                if (res.data.user) {
-                    dispatch({
-                        type: "LOGIN",
-                        payload: res.data.user,
-                    });
-                } else {
-                    dispatch({
-                        type: "LOGOUT",
-                    });
-                }
-            })
-            .catch((err) => {
-                axios.post("/api/users/logout").then((res) => {
-                    dispatch({
-                        type: "LOGOUT",
-                    });
-                });
-            });
-    }, []);
+    }, [user]);
 
     return (
-        <AuthContext.Provider value={{ ...state, dispatch }}>
+        <AuthContext.Provider value={{ user, dispatch }}>
             {children}
         </AuthContext.Provider>
     );
