@@ -9,14 +9,34 @@ GET http://localhost:3000/users/1
 
 
 ### create user
-POST http://localhost:3000/users/
+POST http://localhost:3000/users/register
 Content-Type: application/json
 
 {
-    "name": "ucef",
-    "email": "ucef@mail.com",
-    "password": "123456"
+    "username": "ucefofvf",
+    "password": "1230rf",
+    "cnfPassword": "1230rf"
 }
+
+
+### login user
+POST http://localhost:3000/users/login
+Content-Type: application/json
+
+{
+    "username": "ucef",
+    "password": "123"
+}
+
+
+### login user
+GET http://localhost:3000/auth
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOjcsImlhdCI6MTcwMzE5MDYzNCwiZXhwIjoxNzAzNzk1NDM0fQ.6fNSizq3ztoeNwJU9MDgs_FSQu4GWZBiZt1fiM8Bky4"
+}
+
 
 
 ### update user
