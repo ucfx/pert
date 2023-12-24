@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useAuth } from "./index";
+import useAuth from "hooks/useAuth";
 import axios from "axios";
 
 const useLogout = () => {

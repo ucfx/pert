@@ -12,7 +12,6 @@
     border-radius: 8px;
     border: 2px solid var(--color-black);
     width: 400px;
-    height: 500px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3), 0 17px 46px rgba(0, 0, 0, 0.15);
 }
 
@@ -29,7 +28,7 @@
 }
 
 .form-container .form-content form .input-field:not(:last-of-type) {
-    margin-bottom: 30px;
+    margin-bottom: 35px;
 }
 
 .form-container .form-content form .input-field.center {
@@ -67,16 +66,20 @@
 }
 
 .form-container .form-content form .input-field input {
-    padding: 0 40px;
+    padding: 2px 40px 0;
     height: 55px;
     background: none;
     border: 2px solid var(--color-black);
-    outline: none;
+    outline: 1px solid transparent;
     border-radius: 8px;
     color: var(--text-color);
     font-size: 20px;
     z-index: 1;
     transition: 0.2s;
+
+    &:hover:not(:focus) {
+        outline-color: var(--color-primary);
+    }
 }
 
 .form-container .form-content form .input-field input:focus~label {

@@ -14,6 +14,16 @@ export default defineConfig({
             assets: "/src/assets",
             styles: "/src/styles",
             context: "/src/context",
+            data: "/src/data",
+        },
+    },
+    server: {
+        proxy: {
+            "/api": {
+                target: "http://localhost:3000",
+                changeOrigin: true,
+                rewrite: (path) => path.replace(/^\/api/, ""),
+            },
         },
     },
 });
