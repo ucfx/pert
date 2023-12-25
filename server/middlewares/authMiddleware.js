@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 
 function authenticate(req, res, next) {
-    const token = req.cookie.token;
+    const token = req.cookies.token;
 
     if (!token) {
         return res.status(401).json({ error: "Unauthorized - Missing token" });
@@ -14,27 +14,22 @@ function authenticate(req, res, next) {
     } catch (error) {
         return res
             .clearCookie("token")
-            .redirect("/login")
             .status(401)
             .json({ error: "Unauthorized - Invalid token" });
     }
 }
 
 function generateToken(req, res) {
-    const token = jwt.sign(
-        {
-            _id: req.user._id,
-        },
-        process.env.TOKEN_SECRET,
-        { expiresIn: "1w" }
-    );
+    const token = jwt.sign(req.user, process.env.TOKEN_SECRET, {
+        expiresIn: "1w",
+    });
 
-    res.cookie("token", token, { httpOnly: true });
+    res.cookie("token", token, { httpOnly: true, maxAge: 604800000 });
 
     res.json({
         status: "success",
         message: "User successfully logged in",
-        user: { _id: req.user._id },
+        user: { _id: req.user._id, username: req.user.username },
     });
 }
 
