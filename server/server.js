@@ -15,7 +15,9 @@ const URI = process.env.MONGODB_URI || "mongodb://localhost:27017/pert";
         app.use(cookieParser());
 
         const userRouter = require("./routes/userRouter");
+        const projectRouter = require("./routes/projectRouter");
         app.use("/users", userRouter);
+        app.use("/projects", projectRouter);
         app.get("/auth", authenticate, (req, res) => {
             res.json({ _id: req.user._id, username: req.user.username });
         });

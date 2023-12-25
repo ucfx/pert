@@ -41,174 +41,207 @@ const handleErrors = (err) => {
     return errors;
 };
 
-class UserController {
-    static async create(req, res) {
-        try {
-            const { username, password, cnfPassword } = req.body;
-            if (username === "" || password === "" || cnfPassword === "") {
-                throw new Error("all fields are required");
-            }
-
-            if (username.length < 2) {
-                throw new Error("username length");
-            }
-
-            if (password.length < 2) {
-                throw new Error("password length");
-            }
-
-            if (password !== cnfPassword) {
-                throw new Error("password not match");
-            }
-
-            const passwordHash = bcrypt.hashSync(password, 10);
-            const user = await User.create({
-                username,
-                password: passwordHash,
-            });
-            res.status(201).json({
-                status: "success",
-                message: "User successfully created",
-                user,
-            });
-        } catch (error) {
-            const errors = handleErrors(error);
-            res.status(400).json({
-                status: "error",
-                errors,
-            });
+const create = async (req, res) => {
+    try {
+        const { username, password, cnfPassword } = req.body;
+        if (username === "" || password === "" || cnfPassword === "") {
+            throw new Error("all fields are required");
         }
+
+        if (username.length < 2) {
+            throw new Error("username length");
+        }
+
+        if (password.length < 2) {
+            throw new Error("password length");
+        }
+
+        if (password !== cnfPassword) {
+            throw new Error("password not match");
+        }
+
+        const passwordHash = bcrypt.hashSync(password, 10);
+        const user = await User.create({
+            username,
+            password: passwordHash,
+        });
+        res.status(201).json({
+            status: "success",
+            message: "User successfully created",
+            user,
+        });
+    } catch (error) {
+        const errors = handleErrors(error);
+        res.status(400).json({
+            status: "error",
+            errors,
+        });
     }
-    static async login(req, res, next) {
-        try {
-            const { username, password } = req.body;
-            const user = await User.findOne({ username });
-            if (user) {
-                const isPasswordValid = bcrypt.compareSync(
-                    password,
-                    user.password
-                );
-                if (isPasswordValid) {
-                    req.user = { _id: user._id, username: user.username };
-                    next();
-                } else {
-                    res.json({
-                        status: "error",
-                        message: "Invalid username or password",
-                    });
-                }
+};
+const login = async (req, res, next) => {
+    try {
+        const { username, password } = req.body;
+        const user = await User.findOne({ username });
+        if (user) {
+            const isPasswordValid = bcrypt.compareSync(password, user.password);
+            if (isPasswordValid) {
+                req.user = { _id: user._id, username: user.username };
+                next();
             } else {
                 res.json({
                     status: "error",
                     message: "Invalid username or password",
                 });
             }
-        } catch (error) {
+        } else {
             res.json({
                 status: "error",
-                message: error.message,
+                message: "Invalid username or password",
             });
         }
+    } catch (error) {
+        res.json({
+            status: "error",
+            message: error.message,
+        });
     }
-    static async getAll(req, res) {
-        try {
-            const users = await User.find();
-            res.json({
-                status: "success",
-                message: "Users successfully retrieved",
-                data: {
-                    users,
-                },
-            });
-        } catch (error) {
-            res.json({
-                status: "error",
-                message: error.message,
-            });
-        }
+};
+const getAll = async (req, res) => {
+    try {
+        const users = await User.find();
+        res.json({
+            status: "success",
+            message: "Users successfully retrieved",
+            data: {
+                users,
+            },
+        });
+    } catch (error) {
+        res.json({
+            status: "error",
+            message: error.message,
+        });
     }
+};
 
-    static async getOne(req, res) {
-        try {
-            const user = await User.findById(req.params.id);
+const addProject = async (req, res) => {
+    // const {_id }= req.user;
+    const _id = "65898df935d9414b660740cd";
+    const { _id: projectId } = req.project;
+    try {
+        const user = await User.findByIdAndUpdate(
+            _id,
+
+            { $push: { projects: projectId } },
+            { new: true }
+        )
+            .select("-password -__v")
+            .populate("projects", "title");
+        res.json({
+            status: "success",
+            message: "Project successfully added to user",
+            user,
+        });
+    } catch (error) {
+        res.json({
+            status: "error",
+            message: error.message,
+        });
+    }
+};
+
+const getUserInfo = async (req, res) => {
+    console.log(req.user._id);
+    try {
+        const user = await User.findById(
+            req.user._id,
+            "-password -__v"
+        ).populate("projects", "title");
+        res.json({
+            status: "success",
+            message: "User successfully retrieved",
+            user,
+        });
+    } catch (error) {
+        console.log(error);
+        res.json({
+            status: "error",
+            message: error.message,
+        });
+    }
+};
+
+const update = async (req, res) => {
+    try {
+        const { name, email, password } = req.body;
+        const user = await User.findByIdAndUpdate(
+            req.params.id,
+            { name, email, password },
+            { new: true } // To return the updated document
+        );
+        res.json({
+            status: "success",
+            message: "User successfully updated",
+            data: {
+                user,
+            },
+        });
+    } catch (error) {
+        res.json({
+            status: "error",
+            message: error.message,
+        });
+    }
+};
+
+const checkIsAvailable = async (req, res) => {
+    console.log(req.params.username);
+    try {
+        const user = await User.findOne({ username: req.params.username });
+        if (user) {
             res.json({
-                status: "success",
-                message: "User successfully retrieved",
-                data: {
-                    user,
-                },
+                success: true,
+                available: false,
             });
-        } catch (error) {
+        } else {
             res.json({
-                status: "error",
-                message: error.message,
+                success: true,
+                available: true,
             });
         }
+    } catch (error) {
+        res.json({
+            status: "error",
+            message: error.message,
+        });
     }
+};
 
-    static async update(req, res) {
-        try {
-            const { name, email, password } = req.body;
-            const user = await User.findByIdAndUpdate(
-                req.params.id,
-                { name, email, password },
-                { new: true } // To return the updated document
-            );
-            res.json({
-                status: "success",
-                message: "User successfully updated",
-                data: {
-                    user,
-                },
-            });
-        } catch (error) {
-            res.json({
-                status: "error",
-                message: error.message,
-            });
-        }
-    }
+// const delete=async (req, res)=> {
+//     try {
+//         const user = await User.findByIdAndDelete(req.params.id);
+//         res.json({
+//             status: "success",
+//             message: "User successfully deleted",
+//             data: {
+//                 user,
+//             },
+//         });
+//     } catch (error) {
+//         res.json({
+//             status: "error",
+//             message: error.message,
+//         });
+//     }
+// }
 
-    static async checkIsAvailable(req, res) {
-        console.log(req.params.username);
-        try {
-            const user = await User.findOne({ username: req.params.username });
-            if (user) {
-                res.json({
-                    success: true,
-                    available: false,
-                });
-            } else {
-                res.json({
-                    success: true,
-                    available: true,
-                });
-            }
-        } catch (error) {
-            res.json({
-                status: "error",
-                message: error.message,
-            });
-        }
-    }
-
-    static async delete(req, res) {
-        try {
-            const user = await User.findByIdAndDelete(req.params.id);
-            res.json({
-                status: "success",
-                message: "User successfully deleted",
-                data: {
-                    user,
-                },
-            });
-        } catch (error) {
-            res.json({
-                status: "error",
-                message: error.message,
-            });
-        }
-    }
-}
-
-module.exports = UserController;
+module.exports = {
+    create,
+    login,
+    getAll,
+    addProject,
+    getUserInfo,
+    update,
+    checkIsAvailable,
+    // delete,
+};
