@@ -1,0 +1,8 @@
+// create project
+
+POST http://localhost:3000/projects/create
+Content-Type: application/json
+
+{
+    "title": "project 11"
+}

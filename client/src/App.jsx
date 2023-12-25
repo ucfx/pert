@@ -5,6 +5,7 @@ import {
     Navigate,
     useParams,
     useLocation,
+    Link,
 } from "react-router-dom";
 import { lazy, Suspense } from "react";
 const Loader = lazy(() => import("components/Loader"));
@@ -17,7 +18,7 @@ const PertChart = lazy(() => import("components/PertChart"));
 const NotFound = lazy(() => import("components/NotFound"));
 import useAuth from "hooks/useAuth";
 import { PageTitleProvider } from "context/PageTitleContext";
-
+import { InfoProvider } from "context/InfoContext";
 import { useState } from "react";
 
 function App() {
@@ -68,14 +69,19 @@ function App() {
                     <Route
                         path="/:username"
                         element={
-                            <PageTitleProvider>
-                                <AuthRoute>
-                                    <UserProfile />
-                                </AuthRoute>
-                            </PageTitleProvider>
+                            <AuthRoute>
+                                <PageTitleProvider>
+                                    <InfoProvider>
+                                        <UserProfile />
+                                    </InfoProvider>
+                                </PageTitleProvider>
+                            </AuthRoute>
                         }
                     >
-                        <Route index element={<Navigate to="projects" />} />
+                        <Route
+                            index
+                            element={<Navigate to="projects" replace={true} />}
+                        />
                         <Route
                             path="projects"
                             element={
@@ -145,6 +151,14 @@ function App() {
                                         containerHeight={400}
                                     />
                                 </div>
+                            </>
+                        }
+                    />
+                    <Route
+                        path="/"
+                        element={
+                            <>
+                                home <Link to="/login">login</Link>
                             </>
                         }
                     />
