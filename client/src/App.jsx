@@ -3,14 +3,20 @@ import {
     Routes,
     Route,
     Navigate,
+    useParams,
+    useLocation,
 } from "react-router-dom";
 import { lazy, Suspense } from "react";
 const Loader = lazy(() => import("components/Loader"));
 const Login = lazy(() => import("pages/Login"));
 const Register = lazy(() => import("pages/Register"));
-const Dashboard = lazy(() => import("pages/Dashboard"));
-const PertChart = lazy(() => import("./components/PertChart"));
+const Projects = lazy(() => import("pages/Projects"));
+const Settings = lazy(() => import("pages/Settings"));
+const UserProfile = lazy(() => import("components/UserProfile"));
+const PertChart = lazy(() => import("components/PertChart"));
+const NotFound = lazy(() => import("components/NotFound"));
 import useAuth from "hooks/useAuth";
+import { PageTitleProvider } from "context/PageTitleContext";
 
 import { useState } from "react";
 
@@ -59,14 +65,51 @@ function App() {
         <Suspense fallback={<Loader />}>
             <Router>
                 <Routes>
-                    <Route path="/dashboard" element={<Dashboard />}>
-                        <Route element={<>Dashboard</>} index />
+                    <Route
+                        path="/:username"
+                        element={
+                            <PageTitleProvider>
+                                <AuthRoute>
+                                    <UserProfile />
+                                </AuthRoute>
+                            </PageTitleProvider>
+                        }
+                    >
+                        <Route index element={<Navigate to="projects" />} />
+                        <Route
+                            path="projects"
+                            element={
+                                <AuthRoute>
+                                    <Suspense fallback={<Loader />}>
+                                        <Projects />
+                                    </Suspense>
+                                </AuthRoute>
+                            }
+                        >
+                            {/* <Route path="/" element={<ProjectDetails />} />
+                        <Route path="/create" element={<CreateProject />} />
+                        <Route
+                            path="/edit/:projectId"
+                            element={<EditProject />}
+                        /> */}
+                        </Route>
+                        <Route
+                            path={"settings"}
+                            element={
+                                <AuthRoute>
+                                    <Suspense fallback={<Loader />}>
+                                        <Settings />
+                                    </Suspense>
+                                </AuthRoute>
+                            }
+                            index
+                        />
                     </Route>
                     <Route
                         path="/login"
                         element={
                             user ? (
-                                <Navigate to="/" replace={true} />
+                                <Navigate to="/dashboard" replace={true} />
                             ) : (
                                 <Login />
                             )
@@ -76,7 +119,7 @@ function App() {
                         path="/register"
                         element={
                             user ? (
-                                <Navigate to="/" replace={true} />
+                                <Navigate to="/dashboard" replace={true} />
                             ) : (
                                 <Register />
                             )
@@ -105,6 +148,8 @@ function App() {
                             </>
                         }
                     />
+                    // 404
+                    <Route path="*" element={<NotFound />} />
                 </Routes>
             </Router>
         </Suspense>
@@ -112,29 +157,22 @@ function App() {
 }
 
 export default App;
-/*
 
-    <Route
-                    path="/pert"
-                    element={
-                        <>
-                            <button onClick={() => setData(newData)}>
-                                Click me
-                            </button>
-                            <div
-                                className="pert-chart"
-                                style={{
-                                    width: 800,
-                                    height: 400,
-                                }}
-                            >
-                                <PertChart
-                                    data={data}
-                                    containerWidth={800}
-                                    containerHeight={400}
-                                />
-                            </div>
-                        </>
-                    }
-                />
-                */
+const AuthRoute = ({ children }) => {
+    const { user } = useAuth();
+    const { username } = useParams();
+    const { pathname } = useLocation();
+
+    if (!user) {
+        return <Navigate to="/login" replace={true} />;
+    } else if (user.username !== username) {
+        return (
+            <Navigate
+                to={pathname.replace(username, user.username)}
+                replace={true}
+            />
+        );
+    }
+
+    return children;
+};

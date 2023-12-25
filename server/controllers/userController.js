@@ -89,7 +89,7 @@ class UserController {
                     user.password
                 );
                 if (isPasswordValid) {
-                    req.user = { _id: user._id };
+                    req.user = { _id: user._id, username: user.username };
                     next();
                 } else {
                     res.json({

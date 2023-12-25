@@ -17,7 +17,7 @@ const URI = process.env.MONGODB_URI || "mongodb://localhost:27017/pert";
         const userRouter = require("./routes/userRouter");
         app.use("/users", userRouter);
         app.get("/auth", authenticate, (req, res) => {
-            res.json({ status: "success", user: { _id: req.user._id } });
+            res.json({ _id: req.user._id, username: req.user.username });
         });
 
         app.listen(port, () => {

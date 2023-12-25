@@ -31,6 +31,19 @@ export const AuthProvider = ({ children }) => {
         }
     }, [user]);
 
+    useEffect(() => {
+        console.log("authing");
+        axios
+            .get("/api/auth")
+            .then((res) => {
+                dispatch({ type: "LOGIN", payload: res.data });
+            })
+            .catch((err) => {
+                dispatch({ type: "LOGOUT" });
+                console.log(err);
+            });
+    }, []);
+
     return (
         <AuthContext.Provider value={{ user, dispatch }}>
             {children}
