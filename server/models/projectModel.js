@@ -25,10 +25,17 @@ const projectSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+    },
     tasks: [taskSchema],
     createdAt: { type: Date },
     updatedAt: { type: Date },
 });
+
+projectSchema.index({ title: 1, userId: 1 }, { unique: true });
 
 projectSchema.pre("save", function (next) {
     const now = new Date();

@@ -16,11 +16,7 @@ import {
 import { AnimatePresence, motion } from "framer-motion";
 import axios from "axios";
 
-const CreateProject = ({
-    updateData,
-    titleList,
-    popoverPlacement = "bottom",
-}) => {
+const UpdateProjectTitle = ({ project, updateData, currentTitle }) => {
     const {
         register: projectRegister,
         handleSubmit,
@@ -36,19 +32,29 @@ const CreateProject = ({
 
     const { onOpen, onClose, isOpen } = useDisclosure();
 
-    const createProject = async (data) => {
+    const updateTitle = async (data) => {
+        if (data.title === currentTitle) {
+            onClose();
+            reset();
+            console.log("same title");
+            return;
+        }
         const postData = (data) => {
             return new Promise((resolve, reject) => {
                 axios
-                    .post("/api/projects", data)
-                    .then(({ data: { projects } }) => {
-                        updateData(projects);
+                    .put(`/api/projects/${project._id}`, data)
+                    .then(({ data: { project } }) => {
+                        updateData(project);
                         onClose();
                         reset();
                         resolve();
                     })
                     .catch((err) => {
                         console.log(err);
+                        setError("title", {
+                            type: "manual",
+                            message: err.response.data.message,
+                        });
                         reject();
                     });
             });
@@ -63,8 +69,8 @@ const CreateProject = ({
             success: () => {
                 reset();
                 return {
-                    title: "Created.",
-                    description: "Project created successfully!",
+                    title: "Success!",
+                    description: "Title updated successfully.",
                     duration: 1500,
                     colorScheme: "purple",
                 };
@@ -84,9 +90,6 @@ const CreateProject = ({
     };
 
     const validateTitle = (value) => {
-        if (value.trim() !== "" && titleList.indexOf(value.trim()) !== -1) {
-            return "Project already exists";
-        }
         if (value.trim() !== "" && !isNaN(value.trim().charAt(0))) {
             return "Must start with a letter";
         }
@@ -99,14 +102,22 @@ const CreateProject = ({
     };
 
     return (
-        <Popover
-            placement={popoverPlacement}
-            isOpen={isOpen}
-            onOpen={onOpen}
-            onClose={onClose}
-        >
+        <Popover isOpen={isOpen} onOpen={onOpen} onClose={onClose}>
             <PopoverTrigger>
-                <Button colorScheme="purple">New Project</Button>
+                <Button
+                    p={0}
+                    ml={1}
+                    className={"hint-message"}
+                    _after={{
+                        content: '"Edit title"',
+                        top: "40px",
+                    }}
+                    _hover={{
+                        bg: "purple.100",
+                    }}
+                >
+                    <i className="fa-light fa-pen-to-square" />
+                </Button>
             </PopoverTrigger>
             <PopoverContent
                 m={4}
@@ -117,7 +128,7 @@ const CreateProject = ({
                 }
             >
                 <PopoverBody>
-                    <form onSubmit={handleSubmit(createProject, onError)}>
+                    <form onSubmit={handleSubmit(updateTitle, onError)}>
                         <FormControl>
                             <FormLabel>Title:</FormLabel>
                             <Input
@@ -127,30 +138,15 @@ const CreateProject = ({
                                         message: "Will not be empty",
                                     },
                                     onChange: (e) => {
-                                        if (e.target.value !== "") {
-                                            if (
-                                                titleList.indexOf(
-                                                    e.target.value.trim()
-                                                ) !== -1
-                                            ) {
-                                                setError("title", {
-                                                    type: "manual",
-                                                    message:
-                                                        "Project already exists",
-                                                });
-                                            } else {
-                                                const verefy = validateTitle(
-                                                    e.target.value
-                                                );
-                                                if (verefy !== true) {
-                                                    setError("title", {
-                                                        type: "manual",
-                                                        message: verefy,
-                                                    });
-                                                } else {
-                                                    clearErrors("title");
-                                                }
-                                            }
+                                        if (e.target.value === "") return;
+                                        const verefy = validateTitle(
+                                            e.target.value
+                                        );
+                                        if (verefy !== true) {
+                                            setError("title", {
+                                                type: "manual",
+                                                message: verefy,
+                                            });
                                         } else {
                                             clearErrors("title");
                                         }
@@ -176,6 +172,7 @@ const CreateProject = ({
                                             height: "fit-content",
                                         }}
                                         exit={{ opacity: 0, height: 0 }}
+                                        fontSize="md"
                                         color="red.400"
                                     >
                                         {errors.title.message}
@@ -184,7 +181,7 @@ const CreateProject = ({
                             </AnimatePresence>
                         </FormControl>
                         <Button mt={4} colorScheme="purple" type="submit">
-                            Create Project
+                            Save
                         </Button>
                     </form>
                 </PopoverBody>
@@ -193,4 +190,4 @@ const CreateProject = ({
     );
 };
 
-export default CreateProject;
+export default UpdateProjectTitle;
