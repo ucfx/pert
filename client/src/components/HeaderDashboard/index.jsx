@@ -12,12 +12,41 @@ import {
     MenuDivider,
     SkeletonCircle,
     SkeletonText,
+    Button,
+    useToast,
 } from "@chakra-ui/react";
 import usePageTitle from "hooks/usePageTitle";
 import { motion } from "framer-motion";
+import useLogout from "hooks/useLogout";
 
 const HeaderDashboard = ({ user, loading }) => {
     const { pageTitle } = usePageTitle();
+    const { logout } = useLogout();
+    const toast = useToast({ position: "top", isClosable: true });
+    const handleLogout = () => {
+        toast.closeAll();
+        toast.promise(logout(), {
+            loading: {
+                title: "Logging out...",
+                description: "Please wait.",
+            },
+            success: () => {
+                return {
+                    title: "Logged out successfully.",
+                    description: "See you next time!",
+                    duration: 1500,
+                    colorScheme: "purple",
+                };
+            },
+            error: () => {
+                return {
+                    title: "An error occurred.",
+                    description: "Something went wrong!",
+                    duration: 3000,
+                };
+            },
+        });
+    };
     return (
         <Flex
             as={motion.header}
@@ -91,6 +120,19 @@ const HeaderDashboard = ({ user, loading }) => {
                                 position="relative"
                             >
                                 Settings
+                            </MenuItem>
+                            <MenuDivider
+                                borderColor={"gray.300"}
+                                borderWidth={"3px"}
+                            />
+                            <MenuItem
+                                as={Button}
+                                position="relative"
+                                w={"90%"}
+                                m={"0 auto"}
+                                onClick={handleLogout}
+                            >
+                                Logout
                             </MenuItem>
                         </MenuList>
                     </SkeletonCircle>

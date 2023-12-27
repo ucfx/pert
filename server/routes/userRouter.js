@@ -5,7 +5,7 @@ const auth = require("../middlewares/authMiddleware");
 // router.get("/", userController.getAll);
 router.post("/login", userController.login, auth.generateToken);
 router.post("/register", userController.create);
-// router.get("/:id", userController.getOne);
+router.post("/logout", userController.logout);
 router.put("/:id", userController.update);
 router.get("/user-info", auth.authenticate, userController.getUserInfo);
 router.get("/check-is-available/:username", userController.checkIsAvailable);

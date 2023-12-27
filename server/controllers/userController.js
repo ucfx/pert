@@ -88,24 +88,39 @@ const login = async (req, res, next) => {
                 req.user = { _id: user._id, username: user.username };
                 next();
             } else {
-                res.json({
+                res.status(401).json({
                     status: "error",
                     message: "Invalid username or password",
                 });
             }
         } else {
-            res.json({
+            res.status(401).json({
                 status: "error",
                 message: "Invalid username or password",
             });
         }
     } catch (error) {
-        res.json({
+        res.status(401).json({
             status: "error",
             message: error.message,
         });
     }
 };
+
+const logout = async (req, res) => {
+    try {
+        res.clearCookie("token").json({
+            status: "success",
+            message: "User successfully logged out",
+        });
+    } catch (error) {
+        res.status(401).json({
+            status: "error",
+            message: error.message,
+        });
+    }
+};
+
 const getAll = async (req, res) => {
     try {
         const users = await User.find();
@@ -242,5 +257,5 @@ module.exports = {
     getUserInfo,
     update,
     checkIsAvailable,
-    // delete,
+    logout,
 };

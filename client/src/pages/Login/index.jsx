@@ -1,10 +1,10 @@
 import "styles/layout/form.css";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
-import Button from "components/Button";
-import Loader from "components/Loader";
+// import Button from "components/Button";
 import { Link } from "react-router-dom";
 import useLogin from "hooks/useLogin";
+import { useToast, Button } from "@chakra-ui/react";
 
 const Login = () => {
     const {
@@ -20,6 +20,32 @@ const Login = () => {
 
     const onError = (errors) => {
         console.log(errors);
+    };
+
+    const toast = useToast({ position: "top" });
+    const handleLogin = (data) => {
+        toast.closeAll();
+        toast.promise(login(data), {
+            loading: {
+                title: "Logging in...",
+                description: "Please wait.",
+            },
+            success: () => {
+                return {
+                    title: "Logged in successfully.",
+                    description: "Welcome back!",
+                    duration: 1500,
+                    colorScheme: "purple",
+                };
+            },
+            error: () => {
+                return {
+                    title: "An error occurred.",
+                    description: "Something went wrong!",
+                    duration: 3000,
+                };
+            },
+        });
     };
 
     useEffect(() => {
@@ -40,12 +66,11 @@ const Login = () => {
 
     return (
         <div className="login">
-            {isLoading && <Loader />}
             <div className="container">
                 <div className="form-container">
                     <div className="form-content">
                         <h1>Login</h1>
-                        <form onSubmit={handleSubmit(login, onError)}>
+                        <form onSubmit={handleSubmit(handleLogin, onError)}>
                             <div
                                 className={`input-field ${
                                     usernameVlaid ? "valid" : ""
@@ -128,7 +153,12 @@ const Login = () => {
                                 </span>
                             </div>
                             <div className="input-field center">
-                                <Button buttonStyle="btn btn--primary">
+                                <Button
+                                    isLoading={isLoading}
+                                    loadingText="Logging in..."
+                                    colorScheme="purple"
+                                    type="submit"
+                                >
                                     Login
                                 </Button>
                             </div>
