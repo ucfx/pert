@@ -125,22 +125,22 @@ const getAll = async (req, res) => {
 };
 
 const addProject = async (req, res) => {
-    // const {_id }= req.user;
-    const _id = "65898df935d9414b660740cd";
+    const { _id } = req.user;
+    // const _id = "65898df935d9414b660740cd";
     const { _id: projectId } = req.project;
     try {
-        const user = await User.findByIdAndUpdate(
+        const { projects } = await User.findByIdAndUpdate(
             _id,
 
             { $push: { projects: projectId } },
             { new: true }
         )
-            .select("-password -__v")
-            .populate("projects", "title");
+            .select("-password -__v -username -_id")
+            .populate("projects", "title createdAt");
         res.json({
             status: "success",
             message: "Project successfully added to user",
-            user,
+            projects,
         });
     } catch (error) {
         res.json({
@@ -151,12 +151,11 @@ const addProject = async (req, res) => {
 };
 
 const getUserInfo = async (req, res) => {
-    console.log(req.user._id);
     try {
         const user = await User.findById(
             req.user._id,
-            "-password -__v"
-        ).populate("projects", "title");
+            "-password -__v -projects"
+        );
         res.json({
             status: "success",
             message: "User successfully retrieved",

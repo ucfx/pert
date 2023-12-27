@@ -75,3 +75,59 @@
     border-radius: 4px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
+
+/* create custom scrollbar */
+/* Firefox scrollbar styles */
+@-moz-document url-prefix() {
+
+    /* Set the width and height of the scrollbar */
+    .pert-chart {
+        scrollbar-width: thin;
+        scrollbar-color: #888 #f1f1f1;
+    }
+
+    /* Track color */
+    .pert-chart::-moz-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    /* Thumb color */
+    .pert-chart::-moz-scrollbar-thumb {
+        background: #888;
+        border-radius: 5px;
+    }
+
+    /* Hover state */
+    .pert-chart::-moz-scrollbar-thumb:hover {
+        background: #555;
+    }
+
+    /* Button height */
+    .pert-chart::-moz-scrollbar-button {
+        height: 16px;
+        /* background: red */
+    }
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+::-webkit-scrollbar-button {
+    height: 16px;
+    /* background: red */
+}

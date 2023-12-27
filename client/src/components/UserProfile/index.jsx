@@ -10,8 +10,8 @@ const UserProfile = () => {
         <Box>
             <HeaderDashboard user={data} loading={loading} />
 
-            <Box p="4" h={"calc(100vh - 64px)"} position={"relative"}>
-                {data && <Outlet context={{ data, loading }} />}
+            <Box h={"calc(100vh - 64px)"} position={"relative"}>
+                {data && <Outlet />}
             </Box>
         </Box>
     );

@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
-
-function authenticate(req, res, next) {
+const User = require("../models/userModel");
+async function authenticate(req, res, next) {
     const token = req.cookies.token;
 
     if (!token) {
@@ -10,6 +10,14 @@ function authenticate(req, res, next) {
     try {
         const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
         req.user = decoded;
+        const user = await User.findById(decoded._id);
+        if (!user) {
+            return res
+                .clearCookie("token")
+                .status(401)
+                .json({ error: "Unauthorized - Invalid token 00" });
+        }
+
         next();
     } catch (error) {
         return res

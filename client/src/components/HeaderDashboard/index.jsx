@@ -33,6 +33,8 @@ const HeaderDashboard = ({ user, loading }) => {
             bg="purple.700"
             color="white"
             boxShadow={"0px 0px 10px 0px rgba(0,0,0,0.45)"}
+            pos={"relative"}
+            zIndex="99"
         >
             <Heading as="h1" fontSize="xl">
                 {pageTitle}
@@ -98,7 +100,7 @@ const HeaderDashboard = ({ user, loading }) => {
                     w={"90px"}
                     isLoaded={!loading}
                     noOfLines={1}
-                    mr={"2"}
+                    mr={1}
                     textAlign={"right"}
                 >
                     <Box

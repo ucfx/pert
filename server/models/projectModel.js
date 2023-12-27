@@ -24,11 +24,20 @@ const projectSchema = new mongoose.Schema({
     title: {
         type: String,
         required: true,
-        unique: true,
     },
     tasks: [taskSchema],
+    createdAt: { type: Date },
+    updatedAt: { type: Date },
 });
 
+projectSchema.pre("save", function (next) {
+    const now = new Date();
+    this.updatedAt = now;
+    if (!this.createdAt) {
+        this.createdAt = now;
+    }
+    next();
+});
 const Project = mongoose.model("Project", projectSchema);
 
 module.exports = Project;

@@ -15,10 +15,12 @@ const Projects = lazy(() => import("pages/Projects"));
 const Settings = lazy(() => import("pages/Settings"));
 const UserProfile = lazy(() => import("components/UserProfile"));
 const PertChart = lazy(() => import("components/PertChart"));
+const CreateProject = lazy(() => import("pages/Projects/CreateProject"));
 const NotFound = lazy(() => import("components/NotFound"));
 import useAuth from "hooks/useAuth";
 import { PageTitleProvider } from "context/PageTitleContext";
 import { InfoProvider } from "context/InfoContext";
+import { ProjectProvider } from "context/ProjectContext";
 import { useState } from "react";
 
 function App() {
@@ -86,15 +88,16 @@ function App() {
                             path="projects"
                             element={
                                 <AuthRoute>
-                                    <Suspense fallback={<Loader />}>
-                                        <Projects />
-                                    </Suspense>
+                                    <ProjectProvider>
+                                        <Suspense fallback={<Loader />}>
+                                            <Projects />
+                                        </Suspense>
+                                    </ProjectProvider>
                                 </AuthRoute>
                             }
                         >
-                            {/* <Route path="/" element={<ProjectDetails />} />
-                        <Route path="/create" element={<CreateProject />} />
-                        <Route
+                            <Route path="create" element={<CreateProject />} />
+                            {/*  <Route
                             path="/edit/:projectId"
                             element={<EditProject />}
                         /> */}
