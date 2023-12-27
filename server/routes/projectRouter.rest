@@ -1,6 +1,6 @@
 // create project
 
-POST http://localhost:3000/projects/create
+POST http://localhost:3000/projects
 Content-Type: application/json
 
 {

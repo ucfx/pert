@@ -4,11 +4,8 @@ const { authenticate } = require("../middlewares/authMiddleware");
 const projectController = require("../controllers/projectController");
 const { addProject } = require("../controllers/userController");
 
-router.post(
-    "/create",
-    // authenticate,
-    projectController.createProject,
-    addProject
-);
-
+router.post("/", authenticate, projectController.createProject, addProject);
+router.get("/", authenticate, projectController.getProjects);
+router.delete("/:id", authenticate, projectController.deleteProject);
+router.put("/", projectController.updateProject);
 module.exports = router;
