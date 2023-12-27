@@ -1,7 +1,7 @@
 import usePageTitle from "hooks/usePageTitle";
 import { useEffect } from "react";
-import { Box, Heading, Grid, Flex } from "@chakra-ui/react";
-import { motion } from "framer-motion";
+import { Box, Heading, Grid, Flex, VStack, Text } from "@chakra-ui/react";
+import { motion, AnimatePresence } from "framer-motion";
 import "./style.css";
 import CreateProject from "./CreateProject";
 import useProject from "hooks/useProjects";
@@ -67,6 +67,7 @@ const Projects = () => {
                         borderRadius: "4px",
                         background: "purple.300",
                     }}
+                    fontSize={"3xl"}
                 >
                     My Projects
                 </Heading>
@@ -94,16 +95,60 @@ const Projects = () => {
                     scrollbarGutter: "stable both-edges",
                 }}
             >
+                <AnimatePresence>
+                    {!loading && projects && projects.length === 0 && (
+                        <VStack
+                            as={motion.div}
+                            initial={{
+                                opacity: 0,
+                                translateY: -10,
+                            }}
+                            animate={{
+                                opacity: 1,
+                                translateY: 0,
+                            }}
+                            exit={{
+                                opacity: 0,
+                                translateY: -10,
+                            }}
+                            transition={{
+                                duration: 0.5,
+                            }}
+                            w={"100%"}
+                            h={"100%"}
+                            justifyContent={"center"}
+                            alignItems={"center"}
+                            spacing={4}
+                        >
+                            <Text fontSize={"xl"} fontWeight={"bold"}>
+                                No Projects
+                            </Text>
+                            <CreateProject
+                                updateData={updateData}
+                                titleList={
+                                    (projects &&
+                                        projects.map(
+                                            (project) => project.title
+                                        )) ||
+                                    []
+                                }
+                                popoverPlacement={"top"}
+                            />
+                        </VStack>
+                    )}
+                </AnimatePresence>
+
                 <Grid
                     gridAutoRows={{
-                        base: "minmax(auto, 120px)",
-                        md: "minmax(auto, 120px)",
-                        lg: "minmax(auto, 120px)",
+                        base: "minmax(auto, 140px)",
+                        md: "minmax(auto, 140px)",
+                        lg: "minmax(auto, 140px)",
                     }}
                     templateColumns={{
                         base: "repeat(1, 1fr)",
                         md: "repeat(2, 1fr)",
                         lg: "repeat(3, 1fr)",
+                        xl: "repeat(4, 1fr)",
                     }}
                     gap={6}
                 >

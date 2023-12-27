@@ -136,7 +136,7 @@ const addProject = async (req, res) => {
             { new: true }
         )
             .select("-password -__v -username -_id")
-            .populate("projects", "title createdAt");
+            .populate("projects", "title createdAt updatedAt");
         res.json({
             status: "success",
             message: "Project successfully added to user",

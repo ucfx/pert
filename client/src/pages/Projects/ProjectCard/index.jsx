@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
+import { lazy } from "react";
 import {
     Box,
     Flex,
@@ -18,26 +19,26 @@ import {
     PopoverFooter,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-
+const DeletePopover = lazy(() => import("components/DeletePopover"));
 import axios from "axios";
 
 const ProjectCard = ({ project, updateData }) => {
-    const { isOpen, onOpen, onClose } = useDisclosure();
+    //     const { isOpen, onOpen, onClose } = useDisclosure();
 
     const { isOpen: isVisible, onClose: onDelete } = useDisclosure({
         defaultIsOpen: true,
     });
     const navigate = useNavigate();
-    const handleDeleteProject = async (projectId) => {
-        onClose();
-        const {
-            data: { projects },
-        } = await axios.delete(`/api/projects/${projectId}`);
-        onDelete();
-        setTimeout(() => {
-            updateData(projects);
-        }, 500);
-    };
+    //     const handleDeleteProject = async (projectId) => {
+    //         onClose();
+    //         const {
+    //             data: { projects },
+    //         } = await axios.delete(`/api/projects/${projectId}`);
+    //         onDelete();
+    //         setTimeout(() => {
+    //             updateData(projects);
+    //         }, 500);
+    //     };
 
     return (
         <AnimatePresence>
@@ -97,13 +98,31 @@ const ProjectCard = ({ project, updateData }) => {
                             <i className="fa-solid fa-chevron-right" />
                         </Flex>
 
-                        <Flex w={"100%"} justifyContent={"space-between"}>
-                            <Text fontSize="sm" color="gray.600">
-                                Created at:
-                                {project.createdAt || "2023-05-22"}
-                            </Text>
-
-                            <Popover
+                        <Flex
+                            w={"100%"}
+                            align={"end"}
+                            justifyContent={"space-between"}
+                        >
+                            <Box>
+                                <Text fontSize="sm" color="gray.600">
+                                    <span className="bold">Created at: </span>
+                                    {project.createdAt.slice(0, 10) +
+                                        " " +
+                                        project.createdAt.slice(11, 16)}
+                                </Text>
+                                <Text fontSize="sm" color="gray.600">
+                                    <span className="bold">Last update: </span>
+                                    {project.updatedAt.slice(0, 10) +
+                                        "    " +
+                                        project.updatedAt.slice(11, 16)}
+                                </Text>
+                            </Box>
+                            <DeletePopover
+                                projectId={project._id}
+                                updateData={updateData}
+                                onDelete={onDelete}
+                            />
+                            {/*<Popover
                                 returnFocusOnClose={true}
                                 isOpen={isOpen}
                                 onClose={onClose}
@@ -190,7 +209,7 @@ const ProjectCard = ({ project, updateData }) => {
                                         </ButtonGroup>
                                     </PopoverFooter>
                                 </PopoverContent>
-                            </Popover>
+                            </Popover> */}
                         </Flex>
                     </VStack>
                 </motion.div>
