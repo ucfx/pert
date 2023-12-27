@@ -1,10 +1,10 @@
 import "styles/layout/form.css";
 import { set, useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
-import Button from "components/Button";
+// import Button from "components/Button";
 import { Link, useNavigate } from "react-router-dom";
 import useRegister from "hooks/useRegister";
-import { useToast } from "@chakra-ui/react";
+import { useToast, Button } from "@chakra-ui/react";
 
 const Login = () => {
     const [passwordInputType, setPasswordInputType] = useState("password");
@@ -275,10 +275,12 @@ const Login = () => {
                             </div>
                             <div className="input-field center">
                                 <Button
-                                    buttonStyle="btn btn--primary"
-                                    disabled={isLoading}
+                                    isLoading={isLoading}
+                                    loadingText="Signing up..."
+                                    colorScheme="purple"
+                                    type="submit"
                                 >
-                                    Register
+                                    Sign up
                                 </Button>
                             </div>
                             <hr />

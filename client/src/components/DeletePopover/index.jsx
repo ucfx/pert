@@ -11,33 +11,63 @@ import {
     PopoverFooter,
     ButtonGroup,
     Button,
+    useToast,
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import axios from "axios";
 const DeletePopover = ({ projectId, updateData, onDelete }) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
-
+    const toast = useToast({ position: "top", isClosable: true });
     const navigate = useNavigate();
     const handleDeleteProject = async () => {
-        console.log("handleDeleteProject");
-        onClose();
-        const {
-            data: { projects },
-        } = await axios.delete(`/api/projects/${projectId}`);
-
-        console.log(projects);
-        if (onDelete) {
-            console.log("ondelete is defined");
-            onDelete();
-        }
-        if (updateData) {
-            console.log("updateData is defined");
-            setTimeout(() => {
-                updateData(projects);
-            }, 500);
-        } else {
-            navigate(-1);
-        }
+        const deleteProject = (id) => {
+            return new Promise((resolve, reject) => {
+                axios
+                    .delete(`/api/projects/${id}`)
+                    .then(({ data: { projects } }) => {
+                        console.log(projects);
+                        if (onDelete) {
+                            console.log("ondelete is defined");
+                            onDelete();
+                        }
+                        if (updateData) {
+                            console.log("updateData is defined");
+                            setTimeout(() => {
+                                updateData(projects);
+                            }, 500);
+                        } else {
+                            navigate(-1);
+                        }
+                        resolve();
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                        reject();
+                    });
+            });
+        };
+        toast.closeAll();
+        toast.promise(deleteProject(projectId), {
+            loading: {
+                title: "Deleting project...",
+                description: "Please wait.",
+            },
+            success: () => {
+                return {
+                    title: "Project deleted successfully.",
+                    description: "Create new project or select existing one.",
+                    duration: 1500,
+                    colorScheme: "purple",
+                };
+            },
+            error: () => {
+                return {
+                    title: "An error occurred.",
+                    description: "Something went wrong!",
+                    duration: 3000,
+                };
+            },
+        });
     };
     return (
         <Popover
@@ -78,12 +108,12 @@ const DeletePopover = ({ projectId, updateData, onDelete }) => {
                 boxShadow={"0px 0px 10px 0px rgba(0,0,0,0.45)"}
             >
                 <PopoverHeader fontWeight="semibold" borderColor={"purple.300"}>
-                    Confirmation
+                    Delete project
                 </PopoverHeader>
                 <PopoverArrow />
                 <PopoverCloseButton />
                 <PopoverBody>
-                    Are you sure you want to continue with your action?
+                    Are you sure you want to delete this project?
                     <span className="warning-message">
                         You cannot undo this action afterwards!
                     </span>
@@ -108,7 +138,7 @@ const DeletePopover = ({ projectId, updateData, onDelete }) => {
                             Cancel
                         </Button>
                         <Button onClick={handleDeleteProject} colorScheme="red">
-                            Apply
+                            Delete
                         </Button>
                     </ButtonGroup>
                 </PopoverFooter>

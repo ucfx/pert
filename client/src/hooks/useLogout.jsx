@@ -3,29 +3,24 @@ import useAuth from "hooks/useAuth";
 import axios from "axios";
 
 const useLogout = () => {
-    const [error, setError] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
     const { dispatch } = useAuth();
     const logout = () => {
-        setError(null);
-        setIsLoading(true);
-        axios
-            .post("/api/users/logout")
-            .then((res) => {
-                console.log(res.data);
-                dispatch({
-                    type: "LOGOUT",
+        return new Promise((resolve, reject) => {
+            axios
+                .post("/api/users/logout")
+                .then((res) => {
+                    dispatch({
+                        type: "LOGOUT",
+                    });
+                    resolve();
+                })
+                .catch((err) => {
+                    console.log(err);
+                    reject();
                 });
-            })
-            .catch((err) => {
-                console.log(err);
-                setError(err.response.data.message);
-            })
-            .finally(() => {
-                setIsLoading(false);
-            });
+        });
     };
 
-    return { error, isLoading, logout };
+    return { logout };
 };
 export default useLogout;

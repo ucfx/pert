@@ -30,7 +30,7 @@ const CreateProject = ({
         reset,
     } = useForm();
     const toast = useToast({
-        position: "top-right",
+        position: "top",
         isClosable: true,
     });
 

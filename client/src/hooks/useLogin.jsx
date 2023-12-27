@@ -9,22 +9,42 @@ const useLogin = () => {
     const login = (data) => {
         setError(null);
         setIsLoading(true);
-        axios
-            .post("/api/users/login", data)
-            .then((res) => {
-                console.log(res.data);
-                dispatch({
-                    type: "LOGIN",
-                    payload: res.data.user,
+        // axios
+        //     .post("/api/users/login", data)
+        //     .then((res) => {
+        //         console.log(res.data);
+        //         dispatch({
+        //             type: "LOGIN",
+        //             payload: res.data.user,
+        //         });
+        //     })
+        //     .catch((err) => {
+        //         console.log(err);
+        //         setError(err.response.data.message);
+        //     })
+        //     .finally(() => {
+        //         setIsLoading(false);
+        //     });
+        return new Promise((resolve, reject) => {
+            axios
+                .post("/api/users/login", data)
+                .then((res) => {
+                    console.log(res.data);
+                    dispatch({
+                        type: "LOGIN",
+                        payload: res.data.user,
+                    });
+                    resolve();
+                })
+                .catch((err) => {
+                    console.log(err);
+                    setError(err.response.data.message);
+                    reject();
+                })
+                .finally(() => {
+                    setIsLoading(false);
                 });
-            })
-            .catch((err) => {
-                console.log(err);
-                setError(err.response.data.message);
-            })
-            .finally(() => {
-                setIsLoading(false);
-            });
+        });
     };
 
     return { error, isLoading, login };

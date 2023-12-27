@@ -14,21 +14,8 @@ const Projects = () => {
     }, [updatePageTitle]);
 
     return (
-        <Flex
-            h={"calc(100%)"}
-            flexDirection={"column"}
-            pos={"relative"}
-            zIndex={1}
-        >
+        <Flex h={"100%"} flexDirection={"column"} pos={"relative"} zIndex={1}>
             <Flex
-                as={motion.div}
-                initial={{
-                    opacity: 0,
-                }}
-                animate={{
-                    opacity: 1,
-                    transition: { duration: 0.5 },
-                }}
                 justifyContent={"space-between"}
                 alignItems={"center"}
                 h={"14%"}
@@ -121,7 +108,7 @@ const Projects = () => {
                             spacing={4}
                         >
                             <Text fontSize={"xl"} fontWeight={"bold"}>
-                                No Projects
+                                You don't have any projects yet. Create one!
                             </Text>
                             <CreateProject
                                 updateData={updateData}
