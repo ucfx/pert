@@ -65,9 +65,26 @@ const HeaderDashboard = ({ user, loading }) => {
             pos={"relative"}
             zIndex="99"
         >
-            <Heading as="h1" fontSize="xl">
-                {pageTitle}
-            </Heading>
+            <Box>
+                {pageTitle && (
+                    <Heading
+                        as={motion.h1}
+                        initial={{
+                            translateX: -10,
+                            opacity: 0,
+                        }}
+                        animate={{
+                            translateX: 0,
+                            opacity: 1,
+                            transition: { delay: 0.2 },
+                        }}
+                        fontSize="xl"
+                        size="lg"
+                    >
+                        {pageTitle}
+                    </Heading>
+                )}
+            </Box>
             <Flex align="center" flexDirection={"row-reverse"}>
                 <Menu>
                     <SkeletonCircle size="8" isLoaded={!loading}>
@@ -131,6 +148,10 @@ const HeaderDashboard = ({ user, loading }) => {
                                 w={"90%"}
                                 m={"0 auto"}
                                 onClick={handleLogout}
+                                _focus={{
+                                    outline: "none",
+                                    boxShadow: "none",
+                                }}
                             >
                                 Logout
                             </MenuItem>
