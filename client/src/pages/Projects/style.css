@@ -121,6 +121,10 @@ project-card .bold {
     margin-right: 10px;
 }
 
+.project-details h2 {
+    font-size: 28px
+}
+
 .project-details h2 i.fa-chevron-left {
     cursor: pointer;
     transition: .2s;

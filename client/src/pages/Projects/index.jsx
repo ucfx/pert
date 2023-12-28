@@ -31,7 +31,7 @@ const Projects = () => {
                 p="4"
             >
                 <Heading
-                    as={motion.h1}
+                    as={motion.h3}
                     position="relative"
                     initial={{
                         translateX: -8,
@@ -54,7 +54,8 @@ const Projects = () => {
                         borderRadius: "4px",
                         background: "purple.300",
                     }}
-                    fontSize={"3xl"}
+                    fontSize={"2xl"}
+                    p={"15px"}
                 >
                     My Projects
                 </Heading>
