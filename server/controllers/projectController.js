@@ -74,23 +74,19 @@ const getOne = async (req, res) => {
     const { _id } = req.user;
 
     try {
-        const data = await User.findById(_id, "-password -__v -username -_id")
-            .populate({
-                path: "projects",
-                match: { _id: projectId },
-                select: "title createdAt updatedAt tasks",
-            })
-            .select("projects");
-        console.log(data);
+        const project = await Project.findOne({
+            _id: projectId,
+            userId: _id,
+        }).select("-__v -userId");
         res.json({
             status: "success",
             message: "Project successfully retrieved",
-            project: data.projects[0] || null,
+            project: project,
         });
     } catch (error) {
         res.status(401).json({
             status: "error",
-            message: error.message,
+            message: "Project not found",
         });
     }
 };
@@ -99,10 +95,13 @@ const deleteProject = async (req, res) => {
     const { id } = req.params;
     const { _id } = req.user;
     try {
-        const deletedProject = await Project.findByIdAndDelete(id);
+        const result = await Project.deleteOne({
+            _id: id,
+            userId: _id,
+        });
 
-        if (!deletedProject) {
-            return res.status(404).json({
+        if (result.deletedCount === 0) {
+            return res.status(401).json({
                 status: "error",
                 message: "Project not found",
             });
@@ -110,7 +109,7 @@ const deleteProject = async (req, res) => {
 
         await User.findByIdAndUpdate(
             _id,
-            { $pull: { projects: deletedProject._id } },
+            { $pull: { projects: id } },
             { new: true }
         );
         const { projects } = await User.findById(
@@ -125,9 +124,10 @@ const deleteProject = async (req, res) => {
             projects,
         });
     } catch (error) {
+        console.log(error);
         res.json({
             status: "error",
-            message: error.message,
+            message: "Something went wrong",
         });
     }
 };
