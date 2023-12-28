@@ -127,7 +127,7 @@
 
 .form-container .form-content form .input-field .input-error {
     position: absolute;
-    bottom: -20px;
+    bottom: -23px;
     color: var(--text-color-danger);
     opacity: 0;
     transition: 0.2s;
@@ -141,4 +141,4 @@
     width: 100%;
     border: 1px solid var(--color-black);
     margin-bottom: 10px;
-}
+}
