@@ -72,7 +72,6 @@ const Projects = () => {
                 position="relative"
                 overflow={"hidden"}
                 overflowY={"auto"}
-                className="youcef"
                 p={4}
                 pl={2}
                 pr={2}

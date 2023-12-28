@@ -7,7 +7,7 @@ const UserProfile = () => {
     console.log("data", data);
     return (
         <Box>
-            {!loading && <HeaderDashboard user={data} loading={loading} />}
+            <HeaderDashboard user={data} loading={loading} />
 
             <Box h={"calc(100vh - 64px)"} position={"relative"}>
                 {!loading && <Outlet />}

@@ -49,12 +49,12 @@ const HeaderDashboard = ({ user, loading }) => {
     };
     return (
         <Flex
-            as={motion.header}
-            initial={{ opacity: 0 }}
-            animate={{
-                opacity: 1,
-                transition: { duration: 0.5 },
-            }}
+          //as={motion.header}
+          // initial={{ opacity: 0 }}
+          //  animate={{
+          //     opacity: 1,
+          //    transition: { duration: 0.5 },
+          // }}
             align="center"
             justify="space-between"
             p="4"
@@ -159,11 +159,11 @@ const HeaderDashboard = ({ user, loading }) => {
                 </Menu>
                 <SkeletonText
                     skeletonHeight="2"
-                    w={"90px"}
+                    w={loading ? "90px" : "fit-content"}
                     isLoaded={!loading}
                     noOfLines={1}
-                    mr={1}
                     textAlign={"right"}
+                    mr="2"
                 >
                     <Box
                         as={motion.div}
@@ -176,7 +176,6 @@ const HeaderDashboard = ({ user, loading }) => {
                             opacity: 1,
                             transition: { delay: 0.2 },
                         }}
-                        mr="2"
                         textTransform={"capitalize"}
                     >
                         {user && user.username}
