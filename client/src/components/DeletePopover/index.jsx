@@ -22,6 +22,7 @@ const DeletePopover = ({ projectId, updateData, onDelete }) => {
     const handleDeleteProject = async () => {
         const deleteProject = (id) => {
             return new Promise((resolve, reject) => {
+                onClose();
                 axios
                     .delete(`/api/projects/${id}`)
                     .then(({ data: { projects } }) => {

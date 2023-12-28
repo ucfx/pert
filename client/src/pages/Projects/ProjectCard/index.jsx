@@ -1,5 +1,4 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { lazy } from "react";
 import {
     Box,
     Flex,
@@ -7,38 +6,15 @@ import {
     Text,
     VStack,
     useDisclosure,
-    Button,
-    ButtonGroup,
-    Popover,
-    PopoverTrigger,
-    PopoverContent,
-    PopoverHeader,
-    PopoverArrow,
-    PopoverCloseButton,
-    PopoverBody,
-    PopoverFooter,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-const DeletePopover = lazy(() => import("components/DeletePopover"));
-import axios from "axios";
+import DeletePopover from "components/DeletePopover";
 
 const ProjectCard = ({ project, updateData }) => {
-    //     const { isOpen, onOpen, onClose } = useDisclosure();
-
     const { isOpen: isVisible, onClose: onDelete } = useDisclosure({
         defaultIsOpen: true,
     });
     const navigate = useNavigate();
-    //     const handleDeleteProject = async (projectId) => {
-    //         onClose();
-    //         const {
-    //             data: { projects },
-    //         } = await axios.delete(`/api/projects/${projectId}`);
-    //         onDelete();
-    //         setTimeout(() => {
-    //             updateData(projects);
-    //         }, 500);
-    //     };
 
     return (
         <AnimatePresence>

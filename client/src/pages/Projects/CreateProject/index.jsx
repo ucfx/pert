@@ -106,7 +106,19 @@ const CreateProject = ({
             onClose={onClose}
         >
             <PopoverTrigger>
-                <Button colorScheme="purple">New Project</Button>
+                <Button
+                    as={motion.button}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{
+                        opacity: 1,
+                        y: 0,
+                        transition: { duration: 0.5, delay: 0.2 },
+                    }}
+                    exit={{ opacity: 0, y: 10 }}
+                    colorScheme="purple"
+                >
+                    New Project
+                </Button>
             </PopoverTrigger>
             <PopoverContent
                 m={4}
