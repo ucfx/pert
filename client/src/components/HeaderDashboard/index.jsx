@@ -50,9 +50,8 @@ const HeaderDashboard = ({ user, loading }) => {
     return (
         <Flex
             as={motion.header}
-            initial={{ translateY: -10, opacity: 0 }}
+            initial={{ opacity: 0 }}
             animate={{
-                translateY: 0,
                 opacity: 1,
                 transition: { duration: 0.5 },
             }}

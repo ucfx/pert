@@ -10,7 +10,9 @@ const Login = () => {
     const [usernameVlaid, setUsernameValid] = useState(false);
     const [passwordVlaid, setPasswordValid] = useState(false);
     const [cnfPasswordVlaid, setCnfPasswordValid] = useState(false);
-
+    useEffect(() => {
+        document.title = "Register";
+    }, []);
     const navigate = useNavigate();
     const {
         setValue,

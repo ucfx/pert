@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import useLogin from "hooks/useLogin";
 import { useToast, Button } from "@chakra-ui/react";
-
 const Login = () => {
     const {
         setError,
@@ -14,6 +13,9 @@ const Login = () => {
         formState: { errors },
     } = useForm();
 
+    useEffect(() => {
+        document.title = "Login";
+    }, []);
     const { login, isLoading, error } = useLogin();
 
     const [passwordInputType, setPasswordInputType] = useState("password");
