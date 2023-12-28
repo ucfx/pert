@@ -1,7 +1,9 @@
-import React from "react";
+import React, {lazy} from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
-import { AuthProvider } from "context/AuthContext";
+const AuthProvider = lazy(() => import('context/AuthContext').then((module) => {
+	return {default: module.AuthProvider}
+}));
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 
 const theme = extendTheme({

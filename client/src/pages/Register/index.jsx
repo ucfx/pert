@@ -1,7 +1,6 @@
 import "styles/layout/form.css";
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
-// import Button from "components/Button";
 import { Link, useNavigate } from "react-router-dom";
 import useRegister from "hooks/useRegister";
 import { useToast, Button } from "@chakra-ui/react";

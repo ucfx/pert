@@ -1,16 +1,12 @@
 import usePageTitle from "hooks/usePageTitle";
-import { useEffect, lazy } from "react";
+import { useEffect } from "react";
 import { Box, Heading, Grid, Flex, Button, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
 
-const DeletePopover = lazy(() => import("components/DeletePopover"));
+import DeletePopover from "components/DeletePopover";
 import useProjectDetails from "hooks/useProjectDetails";
-// const useProjectDetails = lazy(() => import("hooks/useProjectDetails"));
-const UpdateProjectTitle = lazy(() =>
-    import("pages/Projects/UpdateProjectTitle")
-);
-
+import UpdateProjectTitle from "pages/Projects/UpdateProjectTitle";
 import "../style.css";
 const ProjectDetails = () => {
     const { updatePageTitle } = usePageTitle();

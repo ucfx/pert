@@ -1,4 +1,3 @@
-// components/NotFound.js
 import React from "react";
 import { Flex, Heading, Text, Link } from "@chakra-ui/react";
 import { motion } from "framer-motion";
