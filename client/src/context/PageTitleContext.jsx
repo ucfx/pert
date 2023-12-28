@@ -5,9 +5,9 @@ export const PageTitleContext = createContext();
 export const PageTitleProvider = ({ children }) => {
     const [pageTitle, setPageTitle] = useState("");
 
-    const updatePageTitle = (title) => {
+    const updatePageTitle = (title, tabTitle) => {
+        document.title = `${tabTitle || title}`;
         setPageTitle(title);
-        document.title = `Pert |${title}`;
     };
 
     return (

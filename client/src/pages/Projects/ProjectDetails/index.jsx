@@ -13,14 +13,14 @@ const ProjectDetails = () => {
     const { data: project, loading, updateData } = useProjectDetails();
     const location = useLocation();
     useEffect(() => {
-        updatePageTitle("Projects");
-    }, [updatePageTitle]);
+        if (project) updatePageTitle("Projects", "Projects | " + project.title);
+    }, [updatePageTitle, project]);
     const navigate = useNavigate();
 
     return (
         <Flex
             className="project-details"
-            h={"calc(100%)"}
+            h={"100%"}
             flexDirection={"column"}
             pos={"relative"}
             zIndex={1}
