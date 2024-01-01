@@ -1,161 +1,160 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
 }
 
 #root {
-    height: 100vh;
+	height: 100vh;
 }
 
 :root {
-    --font-family: Inter,
-        system-ui,
-        Avenir,
-        Helvetica,
-        Arial,
-        sans-serif;
+	--font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 
-    --color-primary: #4251ab;
-    --color-primary-light: #a3a8ff;
-    --color-primary-dark: #314091;
-    --color-secondary: #e1e5ff;
-    --color-black: #181920;
-    --color-black-light: #2e2f34;
-    --color-danger: #f56565;
-    --color-danger-light: #ffc2c2;
-    --color-danger-dark: #c24f4f;
-    --color-warning: #ecc94b;
-    --color-warning-light: #fff68f;
-    --color-warning-dark: #bea23b;
-    --color-info: #63b3ed;
-    --box-shadow-1: rgba(50, 50,
-            93,
-            .1) 0 0 0 1px inset,
-        rgba(50, 50, 93, .1) 0 2px 5px 0,
-        rgba(0, 0, 0, .07) 0 1px 1px 0;
-    --box-shadow-focus: rgba(50, 50, 93, .1) 0 0 0 1px inset,
-        rgba(50, 50, 93, .2) 0 6px 15px 0,
-        rgba(0, 0, 0, .1) 0 2px 2px 0,
-        rgba(103, 108, 255, 0.3) 0 0 0 4px;
+	--color-primary: #4251ab;
+	--color-primary-light: #a3a8ff;
+	--color-primary-dark: #314091;
+	--color-secondary: #e1e5ff;
+	--color-black: #181920;
+	--color-black-light: #2e2f34;
+	--color-danger: #f56565;
+	--color-danger-light: #ffc2c2;
+	--color-danger-dark: #c24f4f;
+	--color-warning: #ecc94b;
+	--color-warning-light: #fff68f;
+	--color-warning-dark: #bea23b;
+	--color-info: #63b3ed;
+	--box-shadow-1: rgba(50, 50, 93, 0.1) 0 0 0 1px inset,
+		rgba(50, 50, 93, 0.1) 0 2px 5px 0, rgba(0, 0, 0, 0.07) 0 1px 1px 0;
+	--box-shadow-focus: rgba(50, 50, 93, 0.1) 0 0 0 1px inset,
+		rgba(50, 50, 93, 0.2) 0 6px 15px 0, rgba(0, 0, 0, 0.1) 0 2px 2px 0,
+		rgba(103, 108, 255, 0.3) 0 0 0 4px;
 
-    --text-color: var(--color-black);
-    --text-color-danger: var(--color-danger-dark);
-    --background-color: var(--color-secondary);
+	--text-color: var(--color-black);
+	--text-color-danger: var(--color-danger-dark);
+	--background-color: var(--color-secondary);
 
-    --button-text-color: white;
-    --button-bg-primary: var(--color-primary);
-    --button-bg-primary-hover: var(--color-primary-dark);
-    --button-bg-secondary: var(--color-secondary);
-    --button-bg-secondary-hover: var(--color-primary-dark);
-    --button-bg-danger: var(--color-danger);
-    --button-bg-danger-hover: var(--color-danger-dark);
-    --button-box-shadow: var(--box-shadw-1);
+	--button-text-color: white;
+	--button-bg-primary: var(--color-primary);
+	--button-bg-primary-hover: var(--color-primary-dark);
+	--button-bg-secondary: var(--color-secondary);
+	--button-bg-secondary-hover: var(--color-primary-dark);
+	--button-bg-danger: var(--color-danger);
+	--button-bg-danger-hover: var(--color-danger-dark);
+	--button-box-shadow: var(--box-shadw-1);
 
-    font-family: var(--font-family);
-    line-height: 1.5;
-    font-weight: 400;
+	font-family: var(--font-family);
+	line-height: 1.5;
+	font-weight: 400;
 
-    color-scheme: light dark;
-    color: var(--text-color);
-    background-color: var(--background-color);
+	color-scheme: light dark;
+	color: var(--text-color);
+	background-color: var(--background-color);
 
-    font-synthesis: none;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-
+	font-synthesis: none;
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }
 
 .pert-chart {
-    position: relative;
-    overflow: hidden;
-    background: #fff;
-    border: 1px solid #151515;
-    border-radius: 4px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+	position: relative;
+	overflow: hidden;
+	background: #fff;
+	border: 1px solid #151515;
+	border-radius: 4px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .hint-message {
-    position: relative;
+	position: relative;
 }
 
 .hint-message::after {
-    content: attr(data-hint);
-    position: absolute;
-    padding: 10px;
-    top: 25px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: #fff;
-    background: #2f2f41;
-    border-radius: 4px;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease;
-    font-size: 0.7rem;
-    letter-spacing: 2px;
-    text-transform: capitalize;
-    font-family: 'Inter', sans-serif;
-    transition: 0.2s;
-    z-index: 11;
+	content: attr(data-hint);
+	position: absolute;
+	padding: 10px;
+	top: 25px;
+	left: 50%;
+	transform: translateX(-50%);
+	color: #fff;
+	background: #2f2f41;
+	border-radius: 4px;
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity 0.3s ease;
+	font-size: 0.7rem;
+	letter-spacing: 2px;
+	text-transform: capitalize;
+	font-family: "Inter", sans-serif;
+	transition: 0.2s;
+	z-index: 11;
 }
 
 .hint-message:hover::after {
-    opacity: 1;
-    visibility: visible;
+	opacity: 1;
+	visibility: visible;
 }
 
 @-moz-document url-prefix() {
+	/* Set the width and height of the scrollbar */
+	.pert-chart {
+		scrollbar-width: thin;
+		scrollbar-color: #888 #f1f1f1;
+	}
 
-    /* Set the width and height of the scrollbar */
-    .pert-chart {
-        scrollbar-width: thin;
-        scrollbar-color: #888 #f1f1f1;
-    }
+	/* Track color */
+	.pert-chart::-moz-scrollbar-track {
+		background: #f1f1f1;
+	}
 
-    /* Track color */
-    .pert-chart::-moz-scrollbar-track {
-        background: #f1f1f1;
-    }
+	/* Thumb color */
+	.pert-chart::-moz-scrollbar-thumb {
+		background: #888;
+		border-radius: 5px;
+	}
 
-    /* Thumb color */
-    .pert-chart::-moz-scrollbar-thumb {
-        background: #888;
-        border-radius: 5px;
-    }
+	/* Hover state */
+	.pert-chart::-moz-scrollbar-thumb:hover {
+		background: #555;
+	}
 
-    /* Hover state */
-    .pert-chart::-moz-scrollbar-thumb:hover {
-        background: #555;
-    }
-
-    /* Button height */
-    .pert-chart::-moz-scrollbar-button {
-        height: 16px;
-        /* background: red */
-    }
+	/* Button height */
+	.pert-chart::-moz-scrollbar-button {
+		height: 16px;
+		/* background: red */
+	}
 }
 
 ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+	width: 8px;
+	height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-    background: #f1f1f1;
+	background: #f1f1f1;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 5px;
+	background: #888;
+	border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #555;
+	background: #555;
 }
 
 ::-webkit-scrollbar-button {
-    height: 16px;
-    /* background: red */
+	height: 16px;
+	/* background: red */
+}
+
+th,
+td {
+	/* make border white */
+	border: 1px solid #fff;
 }
