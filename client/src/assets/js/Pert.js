@@ -1,173 +1,184 @@
 "use strict";
 
 class Pert {
-	constructor(data) {
-		this.data = [
-			{ key: "0", length: 0, text: "Start" },
-			...data.map((_) => (_.dependsOn ? { ..._ } : { ..._, dependsOn: ["0"] })),
-		];
-		console.log(this.data);
-		this.nodes = null;
-		this.levels = null;
-	}
+    constructor(data) {
+        this.data = [
+            { key: "0", length: 0, text: "Start" },
+            ...data.map((_) =>
+                _.dependsOn ? { ..._ } : { ..._, dependsOn: ["0"] }
+            ),
+        ];
+        console.log(this.data);
+        this.nodes = null;
+        this.levels = null;
+    }
 
-	calculatePERT() {
-		this.nodes = null;
-		this.levels = null;
+    calculatePERT() {
+        this.nodes = null;
+        this.levels = null;
 
-		this.nodes = [...this.data];
+        this.nodes = [...this.data];
 
-		if (this.levels === null) this.getLevels();
+        if (this.levels === null) this.getLevels();
 
-		let levelKeys = Object.keys(this.levels);
-		levelKeys.forEach((levelKey) => {
-			this.levels[levelKey].forEach((index) => {
-				this.calculateEarlyTimes(index);
-			});
-		});
+        let levelKeys = Object.keys(this.levels);
+        levelKeys.forEach((levelKey) => {
+            this.levels[levelKey].forEach((index) => {
+                this.calculateEarlyTimes(index);
+            });
+        });
 
-		let lastTask = this.nodes.reduce((prev, current) =>
-			prev.earlyFinish > current.earlyFinish ? prev : current
-		);
-		lastTask.lateFinish = lastTask.earlyFinish;
-		lastTask.critical = true;
-		levelKeys = levelKeys.sort((a, b) => b - a);
-		this.nodes.push({
-			key: this.nodes.length.toString(),
-			text: "Finish",
-			dependsOn: [lastTask.key],
-			length: 0,
-			earlyStart: lastTask.earlyFinish,
-			earlyFinish: lastTask.earlyFinish,
-			lateFinish: lastTask.earlyFinish,
-			lateStart: lastTask.earlyFinish,
-			level: lastTask.level + 1,
-			critical: true,
-		});
+        let lastTask = this.nodes.reduce((prev, current) =>
+            prev.earlyFinish > current.earlyFinish ? prev : current
+        );
+        lastTask.lateFinish = lastTask.earlyFinish;
+        lastTask.critical = true;
+        levelKeys = levelKeys.sort((a, b) => b - a);
 
-		this.levels[lastTask.level + 1] = [this.nodes.length - 1];
+        this.nodes.push({
+            key: this.nodes.length.toString(),
+            text: "Finish",
+            dependsOn: [lastTask.key],
+            length: 0,
+            earlyStart: lastTask.earlyFinish,
+            earlyFinish: lastTask.earlyFinish,
+            lateFinish: lastTask.earlyFinish,
+            lateStart: lastTask.earlyFinish,
+            level: lastTask.level + 1,
+            critical: true,
+        });
 
-		levelKeys.forEach((levelKey) => {
-			this.levels[levelKey].forEach((index) => {
-				this.calculateLateTimes(index, lastTask.lateFinish);
-			});
-		});
-		return this.nodes;
-	}
+        this.levels[lastTask.level + 1] = [`${this.nodes.length - 1}`];
 
-	getSuccessors(task) {
-		return this.nodes.filter(
-			(t) => t.dependsOn && t.dependsOn.includes(task.key)
-		);
-	}
+        levelKeys.forEach((levelKey) => {
+            this.levels[levelKey].forEach((index) => {
+                this.calculateLateTimes(index, lastTask.lateFinish);
+            });
+        });
+        return this.nodes;
+    }
 
-	calculateEarlyTimes(index) {
-		let task = this.nodes[index];
-		if (!task.dependsOn) {
-			task.earlyStart = 0;
-		} else {
-			let maxFinishTime = 0;
-			task.dependsOn.forEach((dependency) => {
-				let dependencyTask = this.nodes.find((item) => item.key === dependency);
-				maxFinishTime = Math.max(
-					maxFinishTime,
-					dependencyTask.earlyStart + dependencyTask.length
-				);
-			});
-			task.earlyStart = maxFinishTime;
-		}
-		task.earlyFinish = task.earlyStart + task.length;
-	}
+    getSuccessors(task) {
+        return this.nodes.filter(
+            (t) => t.dependsOn && t.dependsOn.includes(task.key)
+        );
+    }
 
-	calculateLateTimes(index, lateFinishLastTask) {
-		let task = this.nodes[index];
-		let successors = this.getSuccessors(task);
+    calculateEarlyTimes(index) {
+        let task = this.nodes[index];
+        if (!task.dependsOn) {
+            task.earlyStart = 0;
+        } else {
+            let maxFinishTime = 0;
+            task.dependsOn.forEach((dependency) => {
+                let dependencyTask = this.nodes.find(
+                    (item) => item.key === dependency
+                );
+                maxFinishTime = Math.max(
+                    maxFinishTime,
+                    dependencyTask.earlyStart + dependencyTask.length
+                );
+            });
+            task.earlyStart = maxFinishTime;
+        }
+        task.earlyFinish = task.earlyStart + task.length;
+    }
 
-		let lateFinish;
-		if (successors.length === 0) {
-			lateFinish = lateFinishLastTask;
-		} else {
-			lateFinish = Math.min(...successors.map((s) => s.lateFinish - s.length));
-		}
+    calculateLateTimes(index, lateFinishLastTask) {
+        let task = this.nodes[index];
+        let successors = this.getSuccessors(task);
 
-		task.lateFinish = lateFinish;
-		task.lateStart = task.lateFinish - task.length;
-		task.critical = task.earlyFinish === task.lateFinish;
-	}
+        let lateFinish;
+        if (successors.length === 0) {
+            lateFinish = lateFinishLastTask;
+        } else {
+            lateFinish = Math.min(
+                ...successors.map((s) => s.lateFinish - s.length)
+            );
+        }
 
-	getLevels() {
-		this.levels = {};
-		let nodes = [...this.data];
-		const calcLevel = (task) => {
-			if (!task.dependsOn) {
-				task.level = 0;
-			} else {
-				let maxLevel = 0;
-				task.dependsOn.forEach((dependency) => {
-					let dependencyTask = nodes.find((item) => item.key === dependency);
-					if (dependencyTask.level === undefined) {
-						calcLevel(dependencyTask);
-					}
-					maxLevel = Math.max(maxLevel, dependencyTask.level + 1);
-				});
-				task.level = maxLevel;
-			}
-			if (!this.levels[task.level]) {
-				this.levels[task.level] = [];
-			}
-			if (!this.levels[task.level].includes(task.key)) {
-				this.levels[task.level].push(task.key);
-			}
-		};
+        task.lateFinish = lateFinish;
+        task.lateStart = task.lateFinish - task.length;
+        task.critical = task.earlyFinish === task.lateFinish;
+    }
 
-		nodes.forEach((task) => {
-			calcLevel(task);
-		});
+    getLevels() {
+        this.levels = {};
 
-		let levelKeys = Object.keys(this.levels);
-		levelKeys.forEach((levelKey) => {
-			this.levels[levelKey] = this.levels[levelKey].sort((a, b) => a - b);
-		});
-	}
+        let nodes = [...this.nodes];
+        const calcLevel = (task) => {
+            if (!task.dependsOn) {
+                task.level = 0;
+            } else {
+                let maxLevel = 0;
+                task.dependsOn.forEach((dependency) => {
+                    let dependencyTask = nodes.find(
+                        (item) => item.key === dependency
+                    );
+                    if (dependencyTask.level === undefined) {
+                        calcLevel(dependencyTask);
+                    }
+                    maxLevel = Math.max(maxLevel, dependencyTask.level + 1);
+                });
+                task.level = maxLevel;
+            }
+            if (!this.levels[task.level]) {
+                this.levels[task.level] = [];
+            }
+            if (!this.levels[task.level].includes(task.key)) {
+                this.levels[task.level].push(task.key);
+            }
+        };
 
-	getNodeLinks() {
-		let linkData = [];
-		let dependencies = [];
-		this.nodes.forEach((task, index) => {
-			if (index === 0) return;
-			if (task.dependsOn) {
-				task.dependsOn.forEach((dependency) => {
-					dependencies.push(dependency);
-					linkData.push({ from: dependency, to: task.key });
-				});
-			} else {
-				linkData.push({ from: 0, to: task.key });
-			}
-		});
+        nodes.forEach((task) => {
+            calcLevel(task);
+        });
 
-		// Add links to finish node
-		this.nodes
-			.filter(
-				(task) =>
-					!dependencies.includes(task.key) && task.key !== this.nodes.length - 1
-			)
-			.forEach((node) => {
-				linkData.push({
-					from: node.key,
-					to: this.nodes[this.nodes.length - 1].key,
-				});
-			});
+        let levelKeys = Object.keys(this.levels);
+        levelKeys.forEach((levelKey) => {
+            this.levels[levelKey] = this.levels[levelKey].sort((a, b) => a - b);
+        });
+    }
 
-		return linkData;
-	}
+    getNodeLinks() {
+        let linkData = [];
+        let dependencies = [];
+        this.nodes.forEach((task, index) => {
+            if (index === 0) return;
+            if (task.dependsOn) {
+                task.dependsOn.forEach((dependency) => {
+                    dependencies.push(dependency);
+                    linkData.push({ from: dependency, to: task.key });
+                });
+            } else {
+                linkData.push({ from: 0, to: task.key });
+            }
+        });
 
-	solve() {
-		return {
-			nodes: this.calculatePERT(),
-			levels: this.levels,
-			links: this.getNodeLinks(),
-		};
-	}
+        // Add links to finish node
+        this.nodes
+            .filter(
+                (task) =>
+                    !dependencies.includes(task.key) &&
+                    task.key !== `${this.nodes.length - 1}`
+            )
+            .forEach((node) => {
+                linkData.push({
+                    from: node.key,
+                    to: this.nodes[this.nodes.length - 1].key,
+                });
+            });
+
+        return linkData;
+    }
+
+    solve() {
+        return {
+            nodes: this.calculatePERT(),
+            levels: this.levels,
+            links: this.getNodeLinks(),
+        };
+    }
 }
 
 export default Pert;
