@@ -127,7 +127,7 @@ const PertChart = ({ data, containerWidth, containerHeight }) => {
         if (!func.current) return;
         func.current.resetTransform();
         func.current.centerView(imageScale);
-    }, [isOnScreen, imageScale]);
+    }, [isOnScreen, imageScale, data]);
 
     return (
         <div className="chart">

@@ -154,10 +154,20 @@ class Pert {
             if (task.dependsOn) {
                 task.dependsOn.forEach((dependency) => {
                     dependencies.push(dependency);
-                    linkData.push({ from: dependency, to: task.key });
+                    linkData.push({
+                        from: dependency,
+                        to: task.key,
+                        critical:
+                            task.critical &&
+                            this.nodes[parseInt(dependency)].critical,
+                    });
                 });
             } else {
-                linkData.push({ from: 0, to: task.key });
+                linkData.push({
+                    from: 0,
+                    to: task.key,
+                    critical: task.critical,
+                });
             }
         });
 
@@ -172,6 +182,7 @@ class Pert {
                 linkData.push({
                     from: node.key,
                     to: this.nodes[this.nodes.length - 1].key,
+                    critical: node.critical,
                 });
             });
 

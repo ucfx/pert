@@ -136,6 +136,10 @@
     stroke-width: 13px;
 }
 
+.pert-chart .chart svg g path.critical-link {
+    stroke: #ff5c3f;
+    stroke-width: 4px;
+}
 
 .pert-chart .chart svg g path.path-hover {
     stroke: #3541df;
