@@ -5,10 +5,11 @@ class Pert {
         this.data = [
             { key: "0", length: 0, text: "Start" },
             ...data.map((_) =>
-                _.dependsOn ? { ..._ } : { ..._, dependsOn: ["0"] }
+                !_.dependsOn || _.dependsOn.length === 0
+                    ? { ..._, dependsOn: ["0"] }
+                    : { ..._ }
             ),
         ];
-        console.log(this.data);
         this.nodes = null;
         this.levels = null;
     }
@@ -18,8 +19,7 @@ class Pert {
         this.levels = null;
 
         this.nodes = [...this.data];
-
-        if (this.levels === null) this.getLevels();
+        this.getLevels();
 
         let levelKeys = Object.keys(this.levels);
         levelKeys.forEach((levelKey) => {
@@ -44,11 +44,10 @@ class Pert {
             earlyFinish: lastTask.earlyFinish,
             lateFinish: lastTask.earlyFinish,
             lateStart: lastTask.earlyFinish,
-            level: lastTask.level + 1,
+            level: levelKeys.length,
             critical: true,
         });
-
-        this.levels[lastTask.level + 1] = [`${this.nodes.length - 1}`];
+        this.levels[levelKeys.length] = [`${this.nodes.length - 1}`];
 
         levelKeys.forEach((levelKey) => {
             this.levels[levelKey].forEach((index) => {

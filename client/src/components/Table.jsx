@@ -52,11 +52,27 @@ export default function Table() {
             case actionTypes.DELETE_TASK:
                 // delete task and remove from dependsOn according to action.payload.taskKey
                 return produce(state, (draftState) => {
-                    draftState.splice(action.payload.index, 1);
                     draftState.forEach((task) => {
                         if (task.dependsOn) {
                             task.dependsOn = task.dependsOn.filter(
                                 (key) => key !== action.payload.taskKey
+                            );
+                        }
+                    });
+                    draftState.splice(action.payload.index, 1);
+                    draftState.forEach((task) => {
+                        if (parseInt(task.key) > action.payload.taskKey) {
+                            task.key = `${task.key - 1}`;
+                        }
+                        if (task.dependsOn) {
+                            if (task.dependsOn.length === 0) {
+                                delete task.dependsOn;
+                                return;
+                            }
+                            task.dependsOn = task.dependsOn.map((key) =>
+                                parseInt(key) > action.payload.taskKey
+                                    ? `${parseInt(key) - 1}`
+                                    : key
                             );
                         }
                     });
@@ -219,7 +235,11 @@ export default function Table() {
                                             }}
                                             data={data
                                                 .filter(
-                                                    (n) => task.key !== n.key
+                                                    (n) =>
+                                                        task.key !== n.key &&
+                                                        !n.dependsOn?.includes(
+                                                            task.key
+                                                        )
                                                 )
                                                 .map((task) => ({
                                                     label: task.text,
