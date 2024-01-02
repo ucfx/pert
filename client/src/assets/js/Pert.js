@@ -105,8 +105,13 @@ class Pert {
         this.levels = {};
 
         let nodes = [...this.nodes];
+        // array to check circular dependencies
+        let arr = [];
         const calcLevel = (task) => {
-            if (!task.dependsOn) {
+            if (arr.includes(task.key)) {
+                throw new Error("Circular dependency detected");
+            }
+            if (!task.dependsOn || task.dependsOn.length === 0) {
                 task.level = 0;
             } else {
                 let maxLevel = 0;
@@ -115,6 +120,7 @@ class Pert {
                         (item) => item.key === dependency
                     );
                     if (dependencyTask.level === undefined) {
+                        arr.push(task.key);
                         calcLevel(dependencyTask);
                     }
                     maxLevel = Math.max(maxLevel, dependencyTask.level + 1);
@@ -130,6 +136,7 @@ class Pert {
         };
 
         nodes.forEach((task) => {
+            arr = [];
             calcLevel(task);
         });
 
