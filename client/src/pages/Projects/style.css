@@ -36,7 +36,7 @@ project-card .bold {
     border-radius: 5px;
 }
 
-.project-card .project-card-title i.fa-chevron-right {
+.project-card .project-card-title .arrow-right {
     position: relative;
     right: -5px;
     opacity: 0;
@@ -57,7 +57,7 @@ project-card .bold {
     text-decoration: underline;
 }
 
-.project-card .project-card-title:hover i.fa-chevron-right {
+.project-card .project-card-title:hover .arrow-right {
     animation: fade-in 1s forwards infinite;
 }
 
@@ -65,9 +65,6 @@ project-card .bold {
     transition: 0.15s;
 }
 
-.project-card .project-card-title i.fa-diagram-project {
-    margin: 8px;
-}
 
 .warning-message {
     color: #ff6055;
@@ -101,22 +98,27 @@ project-card .bold {
     }
 }
 
-.project-details .fa-copy {
+.project-details .copy-icon {
     cursor: pointer;
     transition: .2s;
-    width: 25px;
-    height: 25px;
+    width: 15px;
+    height: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.project-details .fa-copy:hover {
+.project-details .copy-icon:hover {
     color: #3F3F5A;
+    position: relative;
 }
 
-.project-details .fa-copy .project-details h2 i.fa-chevron-left,
-.project-details h2 i.fa-diagram-project {
+.project-details .copy-icon:active {
+    transform: scale(0.8);
+}
+
+.project-details .project-details h2 .back-icon,
+.project-details h2 .diagram-project-icon {
     font-size: 25px;
     margin-right: 10px;
 }
@@ -125,32 +127,29 @@ project-card .bold {
     font-size: 28px
 }
 
-.project-details h2 i.fa-chevron-left {
+.project-details h2 .back-icon {
     cursor: pointer;
     transition: .2s;
-    padding-left: 5px;
     position: relative;
-
-
+    font-size: 35px;
+    left: -3px;
 }
 
-.project-details h2 i.fa-chevron-left:hover {
+.project-details h2 .back-icon:hover {
     color: #3F3F5A;
-    padding-left: 0px;
-    padding-right: 10px;
+    left: -8px;
 }
 
-.project-details h2 i.fa-chevron-left {
-    padding: 5px;
-    font-size: 25px;
-}
 
-.project-details h2 i.fa-pencil {
-    font-size: 25px;
+
+.project-details h2 .pencil-icon {
+    font-size: 20px;
     color: #8484A9;
+    transition: 0.2s;
 }
 
-.project-details h2 i.fa-diagram-project {
-    margin-left: 10px;
-    color: #8484A9;
+.project-details .pencil-icon:active,
+.project-details .back-icon:active,
+.project-details h2 button:active .pencil-icon {
+    transform: scale(0.8);
 }

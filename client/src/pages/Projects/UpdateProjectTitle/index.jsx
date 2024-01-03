@@ -14,6 +14,7 @@ import {
     useToast,
 } from "@chakra-ui/react";
 import { AnimatePresence, motion } from "framer-motion";
+import { HiOutlinePencilAlt } from "react-icons/hi";
 import axios from "axios";
 
 const UpdateProjectTitle = ({ project, updateData, currentTitle }) => {
@@ -107,16 +108,20 @@ const UpdateProjectTitle = ({ project, updateData, currentTitle }) => {
                 <Button
                     p={0}
                     ml={1}
+                    _focus={{
+                        outline: "none",
+                        boxShadow: "none",
+                    }}
                     className={"hint-message"}
                     _after={{
                         content: '"Edit title"',
-                        top: "40px",
+                        top: "45px",
                     }}
                     _hover={{
                         bg: "purple.100",
                     }}
                 >
-                    <i className="fa-light fa-pen-to-square" />
+                    <HiOutlinePencilAlt className="pencil-icon" />
                 </Button>
             </PopoverTrigger>
             <PopoverContent

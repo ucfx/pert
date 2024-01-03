@@ -5,8 +5,12 @@ import { motion } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
 
 import DeletePopover from "components/DeletePopover";
+import Table from "components/Table";
 import useProjectDetails from "hooks/useProjectDetails";
 import UpdateProjectTitle from "pages/Projects/UpdateProjectTitle";
+import { BsDiagram3Fill } from "react-icons/bs";
+import { IoIosArrowBack } from "react-icons/io";
+import { MdContentCopy } from "react-icons/md";
 import "../style.css";
 const ProjectDetails = () => {
     const { updatePageTitle } = usePageTitle();
@@ -25,30 +29,30 @@ const ProjectDetails = () => {
             pos={"relative"}
             zIndex={1}
         >
-            {project && (
-                <Flex
-                    as={motion.div}
-                    initial={{
-                        opacity: 0,
-                    }}
-                    animate={{
-                        opacity: 1,
-                        transition: { duration: 0.5 },
-                    }}
-                    justifyContent={"space-between"}
-                    alignItems={"center"}
-                    h={"14%"}
-                    bg={"purple.50"}
-                    borderBottom={"2px solid"}
-                    borderColor={"purple.100"}
-                    boxSizing="border-box"
-                    boxShadow={
-                        "0 0 5px 0 rgba(0,0,0,0.5), 0 0 20px 0 rgba(0,0,0,0.1)"
-                    }
-                    pos={"relative"}
-                    zIndex="1"
-                    p="4"
-                >
+            <Flex
+                as={motion.div}
+                initial={{
+                    opacity: 0,
+                }}
+                animate={{
+                    opacity: 1,
+                    transition: { duration: 0.5 },
+                }}
+                justifyContent={"space-between"}
+                alignItems={"center"}
+                h={"14%"}
+                bg={"purple.50"}
+                borderBottom={"2px solid"}
+                borderColor={"purple.100"}
+                boxSizing="border-box"
+                boxShadow={
+                    "0 0 5px 0 rgba(0,0,0,0.5), 0 0 20px 0 rgba(0,0,0,0.1)"
+                }
+                pos={"relative"}
+                zIndex="1"
+                p="4"
+            >
+                {project && (
                     <>
                         <Heading
                             as={motion.h2}
@@ -75,11 +79,24 @@ const ProjectDetails = () => {
                                 background: "purple.300",
                             }}
                         >
-                            <i
-                                className="fa-solid fa-chevron-left back-icon"
+                            {/* <i
+                                className="fa-solid fa-chevron-left "
                                 onClick={() => navigate(-1)}
+                            /> */}
+                            <IoIosArrowBack
+                                onClick={() => navigate(-1)}
+                                className="back-icon"
+                                style={{
+                                    display: "inline-block",
+                                }}
                             />
-                            <i className="fa-duotone fa-diagram-project" />
+                            {/* <i className="fa-duotone fa-diagram-project" /> */}
+                            <BsDiagram3Fill
+                                style={{
+                                    display: "inline-block",
+                                    marginRight: "10px",
+                                }}
+                            />
                             {project.title}
                             <UpdateProjectTitle
                                 project={project}
@@ -93,15 +110,15 @@ const ProjectDetails = () => {
                             >
                                 <Text mr={2}>{project._id}</Text>
                                 <i
-                                    className="fa-regular fa-copy hint-message"
+                                    className="hint-message"
                                     data-hint="Copy"
                                     onClick={(e) => {
-                                        e.target.setAttribute(
+                                        e.target.parentNode.setAttribute(
                                             "data-hint",
                                             "Copied!"
                                         );
                                         setTimeout(() => {
-                                            e.target.setAttribute(
+                                            e.target.parentNode.setAttribute(
                                                 "data-hint",
                                                 "Copy"
                                             );
@@ -110,14 +127,16 @@ const ProjectDetails = () => {
                                             project._id
                                         );
                                     }}
-                                />
+                                >
+                                    <MdContentCopy className="copy-icon" />
+                                </i>
                             </Flex>
                         </Heading>
 
                         <DeletePopover projectId={project._id} />
                     </>
-                </Flex>
-            )}
+                )}
+            </Flex>
             {!loading && !project && (
                 <Flex
                     mt={"150px"}
@@ -161,17 +180,9 @@ const ProjectDetails = () => {
                     scrollbarGutter: "stable both-edges",
                 }}
             >
-                <Grid
-                    templateColumns={{
-                        base: "repeat(1, 1fr)",
-                        sm: "repeat(2, 1fr)",
-                        md: "repeat(3, 1fr)",
-                        lg: "repeat(4, 1fr)",
-                        xl: "repeat(5, 1fr)",
-                    }}
-                    gap={4}
-                    className="grid"
-                ></Grid>
+                <Flex justify={"space-between"} gap={4} className="grid">
+                    <Table />
+                </Flex>
             </Box>
         </Flex>
     );

@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -9,12 +13,7 @@
 }
 
 :root {
-    --font-family: Inter,
-        system-ui,
-        Avenir,
-        Helvetica,
-        Arial,
-        sans-serif;
+    --font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 
     --color-primary: #4251ab;
     --color-primary-light: #a3a8ff;
@@ -29,14 +28,10 @@
     --color-warning-light: #fff68f;
     --color-warning-dark: #bea23b;
     --color-info: #63b3ed;
-    --box-shadow-1: rgba(50, 50,
-            93,
-            .1) 0 0 0 1px inset,
-        rgba(50, 50, 93, .1) 0 2px 5px 0,
-        rgba(0, 0, 0, .07) 0 1px 1px 0;
-    --box-shadow-focus: rgba(50, 50, 93, .1) 0 0 0 1px inset,
-        rgba(50, 50, 93, .2) 0 6px 15px 0,
-        rgba(0, 0, 0, .1) 0 2px 2px 0,
+    --box-shadow-1: rgba(50, 50, 93, 0.1) 0 0 0 1px inset,
+        rgba(50, 50, 93, 0.1) 0 2px 5px 0, rgba(0, 0, 0, 0.07) 0 1px 1px 0;
+    --box-shadow-focus: rgba(50, 50, 93, 0.1) 0 0 0 1px inset,
+        rgba(50, 50, 93, 0.2) 0 6px 15px 0, rgba(0, 0, 0, 0.1) 0 2px 2px 0,
         rgba(103, 108, 255, 0.3) 0 0 0 4px;
 
     --text-color: var(--color-black);
@@ -64,7 +59,6 @@
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-
 }
 
 .pert-chart {
@@ -96,8 +90,9 @@
     font-size: 0.7rem;
     letter-spacing: 2px;
     text-transform: capitalize;
-    font-family: 'Inter', sans-serif;
+    font-family: "Inter", sans-serif;
     transition: 0.2s;
+    font-style: normal;
     z-index: 11;
 }
 
@@ -158,4 +153,16 @@
 ::-webkit-scrollbar-button {
     height: 16px;
     /* background: red */
+}
+
+th,
+td {
+    /* make border white */
+    border: 0.5px solid #525252;
+    padding: 10px 15px;
+    font-size: larger;
+}
+
+table {
+    font-family: "Fira Code Retina";
 }

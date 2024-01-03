@@ -14,6 +14,7 @@ import {
     useToast,
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
+import { GoTrash } from "react-icons/go";
 import axios from "axios";
 const DeletePopover = ({ projectId, updateData, onDelete }) => {
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -95,13 +96,16 @@ const DeletePopover = ({ projectId, updateData, onDelete }) => {
                     onClick={onOpen}
                     whileHover={{
                         color: "#b74a42",
+                        cursor: "pointer",
                         transition: {
                             duration: 0.2,
                         },
                     }}
                     whileTap={{ scale: 0.9 }}
-                    className="fa-regular fa-trash-alt trash-icon"
-                ></motion.i>
+                    //     className="fa-regular fa-trash-alt trash-icon"
+                >
+                    <GoTrash />
+                </motion.i>
             </PopoverTrigger>
             <PopoverContent
                 bg={"purple.50"}

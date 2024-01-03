@@ -200,7 +200,8 @@ class Drawer {
             const { pathGroup, startCircle } = this.drawLink(
                 link.from,
                 link.to,
-                index === nodeLinks.length - 1
+                index === nodeLinks.length - 1,
+                link.critical
             );
             paths.appendChild(pathGroup);
             if (startCircle) paths.appendChild(startCircle);
@@ -251,7 +252,7 @@ class Drawer {
         this.svgContainer.appendChild(nodeGroup);
     }
 
-    drawLink(from, to, end) {
+    drawLink(from, to, end, critical) {
         const fromLevel = this.nodes[from].level;
         const fromIndex = this.levelNodeMap[fromLevel].findIndex(
             (node) => node === from
@@ -301,7 +302,7 @@ class Drawer {
         linkPath.setAttribute("d", pathData);
         linkPath.setAttribute("from", `from-${from}`);
         linkPath.setAttribute("to", `to-${to}`);
-
+        linkPath.setAttribute("class", `${critical ? "critical-link" : ""}`);
         pathGroup.appendChild(hiddenLinkPath);
         pathGroup.appendChild(linkPath);
 

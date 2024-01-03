@@ -3,12 +3,13 @@
 class Pert {
     constructor(data) {
         this.data = [
-            { key: 0, length: 0, text: "Start" },
+            { key: "0", length: 0, text: "Start" },
             ...data.map((_) =>
-                _.dependsOn ? { ..._ } : { ..._, dependsOn: [0] }
+                !_.dependsOn || _.dependsOn.length === 0
+                    ? { ..._, dependsOn: ["0"] }
+                    : { ..._ }
             ),
         ];
-        console.log(this.data);
         this.nodes = null;
         this.levels = null;
     }
@@ -18,8 +19,7 @@ class Pert {
         this.levels = null;
 
         this.nodes = [...this.data];
-
-        if (this.levels === null) this.getLevels();
+        this.getLevels();
 
         let levelKeys = Object.keys(this.levels);
         levelKeys.forEach((levelKey) => {
@@ -34,8 +34,9 @@ class Pert {
         lastTask.lateFinish = lastTask.earlyFinish;
         lastTask.critical = true;
         levelKeys = levelKeys.sort((a, b) => b - a);
+
         this.nodes.push({
-            key: this.nodes.length,
+            key: this.nodes.length.toString(),
             text: "Finish",
             dependsOn: [lastTask.key],
             length: 0,
@@ -43,11 +44,10 @@ class Pert {
             earlyFinish: lastTask.earlyFinish,
             lateFinish: lastTask.earlyFinish,
             lateStart: lastTask.earlyFinish,
-            level: lastTask.level + 1,
+            level: levelKeys.length,
             critical: true,
         });
-
-        this.levels[lastTask.level + 1] = [this.nodes.length - 1];
+        this.levels[levelKeys.length] = [`${this.nodes.length - 1}`];
 
         levelKeys.forEach((levelKey) => {
             this.levels[levelKey].forEach((index) => {
@@ -103,9 +103,15 @@ class Pert {
 
     getLevels() {
         this.levels = {};
-        let nodes = [...this.data];
+
+        let nodes = [...this.nodes];
+        // array to check circular dependencies
+        let arr = [];
         const calcLevel = (task) => {
-            if (!task.dependsOn) {
+            if (arr.includes(task.key)) {
+                throw new Error("Circular dependency detected");
+            }
+            if (!task.dependsOn || task.dependsOn.length === 0) {
                 task.level = 0;
             } else {
                 let maxLevel = 0;
@@ -114,6 +120,7 @@ class Pert {
                         (item) => item.key === dependency
                     );
                     if (dependencyTask.level === undefined) {
+                        arr.push(task.key);
                         calcLevel(dependencyTask);
                     }
                     maxLevel = Math.max(maxLevel, dependencyTask.level + 1);
@@ -129,6 +136,7 @@ class Pert {
         };
 
         nodes.forEach((task) => {
+            arr = [];
             calcLevel(task);
         });
 
@@ -146,10 +154,20 @@ class Pert {
             if (task.dependsOn) {
                 task.dependsOn.forEach((dependency) => {
                     dependencies.push(dependency);
-                    linkData.push({ from: dependency, to: task.key });
+                    linkData.push({
+                        from: dependency,
+                        to: task.key,
+                        critical:
+                            task.critical &&
+                            this.nodes[parseInt(dependency)].critical,
+                    });
                 });
             } else {
-                linkData.push({ from: 0, to: task.key });
+                linkData.push({
+                    from: 0,
+                    to: task.key,
+                    critical: task.critical,
+                });
             }
         });
 
@@ -158,12 +176,13 @@ class Pert {
             .filter(
                 (task) =>
                     !dependencies.includes(task.key) &&
-                    task.key !== this.nodes.length - 1
+                    task.key !== `${this.nodes.length - 1}`
             )
             .forEach((node) => {
                 linkData.push({
                     from: node.key,
                     to: this.nodes[this.nodes.length - 1].key,
+                    critical: node.critical,
                 });
             });
 
