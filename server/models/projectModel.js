@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const taskSchema = new mongoose.Schema({
     key: {
-        type: Number,
+        type: String,
         required: true,
     },
     length: {
@@ -15,9 +15,14 @@ const taskSchema = new mongoose.Schema({
     },
     dependsOn: [
         {
-            type: Number,
+            type: String,
         },
     ],
+    projectId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Project",
+        required: true,
+    },
 });
 
 const projectSchema = new mongoose.Schema({
@@ -30,7 +35,12 @@ const projectSchema = new mongoose.Schema({
         ref: "User",
         required: true,
     },
-    tasks: [taskSchema],
+    tasks: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Task",
+        },
+    ],
     createdAt: { type: Date },
     updatedAt: { type: Date },
 });
@@ -45,6 +55,44 @@ projectSchema.pre("save", function (next) {
     }
     next();
 });
-const Project = mongoose.model("Project", projectSchema);
 
-module.exports = Project;
+// pre remove project remove all tasks
+projectSchema.pre("findOneAndDelete", async function (next) {
+    console.log("pre remove project");
+    try {
+        const docToDelete = await this.model.findOne(this.getQuery());
+
+        await mongoose.model("Task").deleteMany({ projectId: docToDelete._id });
+
+        const User = mongoose.model("User");
+        await User.findByIdAndUpdate(docToDelete.userId, {
+            $pull: { projects: docToDelete._id },
+        });
+
+        next();
+    } catch (error) {
+        console.log(error);
+        next(error);
+    }
+});
+
+projectSchema.pre("deleteMany", async function (next) {
+    console.log("pre delete many project");
+    try {
+        const docsToDelete = await this.model.find(this.getQuery());
+
+        const projectIds = docsToDelete.map((doc) => doc._id);
+
+        await mongoose.model("Task").deleteMany({ projectId: projectIds });
+
+        next();
+    } catch (error) {
+        console.log(error);
+        next(error);
+    }
+});
+
+const Project = mongoose.model("Project", projectSchema);
+const Task = mongoose.model("Task", taskSchema);
+
+module.exports = { Project, Task };

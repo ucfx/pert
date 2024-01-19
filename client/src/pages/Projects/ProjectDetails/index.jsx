@@ -20,6 +20,7 @@ const ProjectDetails = () => {
         if (project) updatePageTitle("Projects", "Projects | " + project.title);
     }, [updatePageTitle, project]);
     const navigate = useNavigate();
+    console.log("project", project);
 
     return (
         <Flex
@@ -29,30 +30,30 @@ const ProjectDetails = () => {
             pos={"relative"}
             zIndex={1}
         >
-            <Flex
-                as={motion.div}
-                initial={{
-                    opacity: 0,
-                }}
-                animate={{
-                    opacity: 1,
-                    transition: { duration: 0.5 },
-                }}
-                justifyContent={"space-between"}
-                alignItems={"center"}
-                h={"14%"}
-                bg={"purple.50"}
-                borderBottom={"2px solid"}
-                borderColor={"purple.100"}
-                boxSizing="border-box"
-                boxShadow={
-                    "0 0 5px 0 rgba(0,0,0,0.5), 0 0 20px 0 rgba(0,0,0,0.1)"
-                }
-                pos={"relative"}
-                zIndex="1"
-                p="4"
-            >
-                {project && (
+            {project && (
+                <Flex
+                    as={motion.div}
+                    initial={{
+                        opacity: 0,
+                    }}
+                    animate={{
+                        opacity: 1,
+                        transition: { duration: 0.5 },
+                    }}
+                    justifyContent={"space-between"}
+                    alignItems={"center"}
+                    h={"14%"}
+                    bg={"purple.50"}
+                    borderBottom={"2px solid"}
+                    borderColor={"purple.100"}
+                    boxSizing="border-box"
+                    boxShadow={
+                        "0 0 5px 0 rgba(0,0,0,0.5), 0 0 20px 0 rgba(0,0,0,0.1)"
+                    }
+                    pos={"relative"}
+                    zIndex="1"
+                    p="4"
+                >
                     <>
                         <Heading
                             as={motion.h2}
@@ -135,11 +136,11 @@ const ProjectDetails = () => {
 
                         <DeletePopover projectId={project._id} />
                     </>
-                )}
-            </Flex>
+                </Flex>
+            )}
             {!loading && !project && (
                 <Flex
-                    mt={"150px"}
+                    mt={"30px"}
                     h={"100%"}
                     w={"100%"}
                     justifyContent={"center"}
@@ -166,24 +167,26 @@ const ProjectDetails = () => {
                     </Button>
                 </Flex>
             )}
-            <Box
-                position="relative"
-                overflow={"hidden"}
-                overflowY={"auto"}
-                p={4}
-                pl={2}
-                pr={2}
-                ml={1}
-                mr={1}
-                h={"86%"}
-                style={{
-                    scrollbarGutter: "stable both-edges",
-                }}
-            >
-                <Flex justify={"space-between"} gap={4} className="grid">
-                    <Table />
-                </Flex>
-            </Box>
+            {!loading && project && (
+                <Box
+                    position="relative"
+                    overflow={"hidden"}
+                    overflowY={"auto"}
+                    p={4}
+                    pl={2}
+                    pr={2}
+                    ml={1}
+                    mr={1}
+                    h={"86%"}
+                    style={{
+                        scrollbarGutter: "stable both-edges",
+                    }}
+                >
+                    <Flex justify={"space-between"} gap={4} className="grid">
+                        <Table initialState={project.tasks} />
+                    </Flex>
+                </Box>
+            )}
         </Flex>
     );
 };

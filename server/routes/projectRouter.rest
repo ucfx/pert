@@ -6,3 +6,16 @@ Content-Type: application/json
 {
     "title": "project 11"
 }
+
+
+### 
+// update project
+PUT http://localhost:3000/projects/65999232a638320ae8b71fdf
+Content-Type: application/json
+
+{
+    "title": "hmm",
+    "tasks": [
+    ]
+}
+

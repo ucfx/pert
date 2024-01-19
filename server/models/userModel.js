@@ -45,6 +45,20 @@ const userSchema = new mongoose.Schema(
     { strictPopulate: false }
 );
 
+// pre remove user remove all projects and tasks
+userSchema.pre("findOneAndDelete", async function (next) {
+    console.log("pre remove user");
+    try {
+        const docToDelete = await this.model.findOne(this.getQuery());
+
+        await mongoose.model("Project").deleteMany({ userId: docToDelete._id });
+
+        next();
+    } catch (error) {
+        next(error);
+    }
+});
+
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;

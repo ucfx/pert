@@ -1,31 +1,91 @@
-import { useReducer } from "react";
+import { useEffect, useReducer, useState } from "react";
 import PertChart from "components/PertChart";
-import { produce, current } from "immer";
-import { Button, CloseButton, MultiSelect, TextInput } from "@mantine/core";
-import { IoMdAdd } from "react-icons/io";
+import { produce } from "immer";
+import { CloseButton, MultiSelect, TextInput } from "@mantine/core";
+import { IoMdAdd, IoIosSave } from "react-icons/io";
+import useProjectDetails from "hooks/useProjectDetails";
+import { useToast, Button } from "@chakra-ui/react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 
-export default function Table() {
-    const initialState = [];
+export default function Table({ initialState = [] }) {
+    const { updateData: saveProject } = useProjectDetails();
+    const [loading, setLoading] = useState(false);
+    const [saved, setSaved] = useState(true);
+    const toast = useToast({ position: "top", isClosable: true });
+    const { projectId } = useParams();
+
+    const updateProject = (data) => {
+        setLoading(true);
+        console.log(data);
+        console.log(projectId);
+        const postData = (data) => {
+            return new Promise((resolve, reject) => {
+                axios
+                    .put(`/api/projects/${projectId}`, data)
+                    .then(({ data: { project } }) => {
+                        console.log("saved");
+                        saveProject(project);
+                        setSaved(true);
+                        resolve();
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                        reject();
+                    })
+                    .finally(() => {
+                        setLoading(false);
+                    });
+            });
+        };
+
+        toast.closeAll();
+        toast.promise(postData(data), {
+            loading: {
+                title: "Saving...",
+                description: "Please wait.",
+            },
+            success: () => {
+                return {
+                    title: "Success!",
+                    description: "Saved successfully.",
+                    duration: 1500,
+                    colorScheme: "purple",
+                };
+            },
+            error: () => {
+                return {
+                    title: "An error occurred.",
+                    description: "Something went wrong!",
+                    duration: 3000,
+                };
+            },
+        });
+    };
 
     const actionTypes = {
         ADD_TASK: "ADD_TASK",
         DELETE_TASK: "DELETE_TASK",
+        SAVE_PROJECT: "SAVE_PROJECT",
         UPDATE_TASK_LENGTH: "UPDATE_TASK_LENGTH",
         UPDATE_TASK_NAME: "UPDATE_TASK_NAME",
         TOGGLE_EDITING_NAME: "TOGGLE_EDITING_NAME",
         TOGGLE_EDITING_LENGTH: "TOGGLE_EDITING_LENGTH",
         TOGGLE_EDITING_DEPENDS_ON: "TOGGLE_EDITING_DEPENDS_ON",
         UPDATE_TASK_DEPENDS_ON: "UPDATE_TASK_DEPENDS_ON",
+        DELETE_KEY_FROM_EDITABLE: "DELETE_KEY_FROM_EDITABLE",
+        ADD_TASK_EDITABLE: "ADD_TASK_EDITABLE",
     };
 
     const reducer = (state, action) => {
+        setSaved(false);
         switch (action.type) {
             case actionTypes.ADD_TASK:
                 return produce(state, (draftState) => {
                     draftState.push(action.payload);
                 });
+
             case actionTypes.DELETE_TASK:
-                // delete task and remove from dependsOn according to action.payload.taskKey
                 return produce(state, (draftState) => {
                     draftState.forEach((task) => {
                         if (task.dependsOn) {
@@ -51,8 +111,6 @@ export default function Table() {
                             );
                         }
                     });
-                    console.log("Cunt after this its new state");
-                    console.log("here", current(draftState));
                 });
 
             case actionTypes.UPDATE_TASK_NAME:
@@ -71,8 +129,8 @@ export default function Table() {
                 });
             case actionTypes.TOGGLE_EDITING_NAME:
                 return produce(state, (draftState) => {
-                    draftState[action.payload.index].edititingTask =
-                        !draftState[action.payload.index].edititingTask;
+                    draftState[action.payload.index].editingTask =
+                        !draftState[action.payload.index].editingTask;
                 });
             case actionTypes.TOGGLE_EDITING_LENGTH:
                 return produce(state, (draftState) => {
@@ -84,12 +142,57 @@ export default function Table() {
         }
     };
 
+    const editReducer = (state, action) => {
+        switch (action.type) {
+            case actionTypes.ADD_TASK_EDITABLE:
+                return produce(state, (draftState) => {
+                    draftState.push({
+                        editingTask: true,
+                        editingLength: true,
+                    });
+                });
+            case actionTypes.TOGGLE_EDITING_NAME:
+                return produce(state, (draftState) => {
+                    draftState[action.payload.index].editingTask =
+                        !draftState[action.payload.index].editingTask;
+                });
+            case actionTypes.TOGGLE_EDITING_LENGTH:
+                return produce(state, (draftState) => {
+                    draftState[action.payload.index].editingLength =
+                        !draftState[action.payload.index].editingLength;
+                });
+            case actionTypes.TOGGLE_EDITING_DEPENDS_ON:
+                return produce(state, (draftState) => {
+                    draftState[action.payload.index] =
+                        !draftState[action.payload.index];
+                });
+            case actionTypes.DELETE_KEY_FROM_EDITABLE:
+                return produce(state, (draftState) => {
+                    delete draftState[action.payload.index];
+                });
+
+            default:
+                return state;
+        }
+    };
+
     const [data, dispatch] = useReducer(reducer, initialState);
+    const [editable, dispatch2] = useReducer(
+        editReducer,
+        Array.from({ length: initialState.length }, () => ({
+            editingTask: false,
+            editingLength: false,
+        }))
+    );
+
+    useEffect(() => {
+        console.log("saved", saved);
+    }, [saved]);
 
     return (
         <>
             <div className="flex place-content-center">
-                <table className="border-1 border-purple-700 m-5 bg-purple-50 w-[600px]">
+                <table className="border-1 border-purple-700 m-5 w-[600px]">
                     <thead>
                         <tr>
                             <th className="w-[150px]">Task</th>
@@ -100,11 +203,11 @@ export default function Table() {
                     <tbody>
                         {data.map((task, index) => (
                             <tr key={task.key}>
-                                {task.text && !task.edititingTask ? (
+                                {task.text && !editable[index].editingTask ? (
                                     <td
                                         className="group"
                                         onDoubleClick={() => {
-                                            dispatch({
+                                            dispatch2({
                                                 type: actionTypes.TOGGLE_EDITING_NAME,
                                                 payload: {
                                                     index: index,
@@ -150,7 +253,7 @@ export default function Table() {
                                                         text: e.target.value,
                                                     },
                                                 });
-                                                dispatch({
+                                                dispatch2({
                                                     type: actionTypes.TOGGLE_EDITING_NAME,
                                                     payload: {
                                                         index: index,
@@ -168,14 +271,14 @@ export default function Table() {
                                                                 .value,
                                                         },
                                                     });
-                                                    dispatch({
+                                                    dispatch2({
                                                         type: actionTypes.TOGGLE_EDITING_NAME,
                                                         payload: {
                                                             index: index,
                                                         },
                                                     });
                                                 } else if (e.key === "Escape") {
-                                                    dispatch({
+                                                    dispatch2({
                                                         type: actionTypes.TOGGLE_EDITING_NAME,
                                                         payload: {
                                                             index: index,
@@ -190,7 +293,7 @@ export default function Table() {
 
                                 <td
                                     onDoubleClick={(e) => {
-                                        dispatch({
+                                        dispatch2({
                                             type: actionTypes.TOGGLE_EDITING_LENGTH,
                                             payload: {
                                                 index: index,
@@ -204,7 +307,7 @@ export default function Table() {
                                     }}
                                 >
                                     {(task.length || task.length == 0) &&
-                                    !task.editingLength ? (
+                                    !editable[index].editingLength ? (
                                         task.length
                                     ) : (
                                         <TextInput
@@ -228,7 +331,7 @@ export default function Table() {
                                                         ),
                                                     },
                                                 });
-                                                dispatch({
+                                                dispatch2({
                                                     type: actionTypes.TOGGLE_EDITING_LENGTH,
                                                     payload: {
                                                         index: index,
@@ -248,7 +351,7 @@ export default function Table() {
                                                             ),
                                                         },
                                                     });
-                                                    dispatch({
+                                                    dispatch2({
                                                         type: actionTypes.TOGGLE_EDITING_LENGTH,
                                                         payload: {
                                                             index: index,
@@ -259,75 +362,6 @@ export default function Table() {
                                         />
                                     )}
                                 </td>
-
-                                {/* {(task.length || task.length == 0) &&
-                                !task.editingLength ? (
-                                    <td
-                                        onDoubleClick={() => {
-                                            dispatch({
-                                                type: actionTypes.TOGGLE_EDITING_LENGTH,
-                                                payload: {
-                                                    index: index,
-                                                },
-                                            });
-                                        }}
-                                    >
-                                        {task.length}
-                                    </td>
-                                ) : (
-                                    <td>
-                                        <TextInput
-                                            placeholder="Duration"
-                                            type="number"
-                                            onFocus={(e) => {
-                                                if (e.target.value === "")
-                                                    e.target.value =
-                                                        task.length || 0;
-                                            }}
-                                            onBlur={(e) => {
-                                                if (e.target.value === "")
-                                                    e.target.value =
-                                                        task.length || 0;
-                                                dispatch({
-                                                    type: actionTypes.UPDATE_TASK_LENGTH,
-                                                    payload: {
-                                                        index: index,
-                                                        length: parseInt(
-                                                            e.target.value || 0
-                                                        ),
-                                                    },
-                                                });
-                                                dispatch({
-                                                    type: actionTypes.TOGGLE_EDITING_LENGTH,
-                                                    payload: {
-                                                        index: index,
-                                                    },
-                                                });
-                                            }}
-                                            onKeyUp={(e) => {
-                                                if (e.key === "Enter") {
-                                                    e.preventDefault();
-                                                    dispatch({
-                                                        type: actionTypes.UPDATE_TASK_LENGTH,
-                                                        payload: {
-                                                            index: index,
-                                                            length: parseInt(
-                                                                e.target
-                                                                    .value || 0
-                                                            ),
-                                                        },
-                                                    });
-                                                    dispatch({
-                                                        type: actionTypes.TOGGLE_EDITING_LENGTH,
-                                                        payload: {
-                                                            index: index,
-                                                        },
-                                                    });
-                                                }
-                                            }}
-                                        />
-                                    </td>
-                                )} */}
 
                                 <td>
                                     {/* select from previous tasks */}
@@ -364,6 +398,7 @@ export default function Table() {
                                                     ? "None"
                                                     : ""
                                             }
+                                            hidePickedOptions
                                         />
                                     </div>
                                 </td>
@@ -375,16 +410,19 @@ export default function Table() {
                         <tr>
                             <td>
                                 <Button
-                                    leftSection={<IoMdAdd />}
+                                    leftIcon={<IoMdAdd />}
+                                    colorScheme="purple"
                                     onClick={() => {
+                                        let index = data.length + 1;
+                                        dispatch2({
+                                            type: actionTypes.ADD_TASK_EDITABLE,
+                                        });
                                         dispatch({
                                             type: actionTypes.ADD_TASK,
                                             payload: {
-                                                key: `${data.length + 1}`,
+                                                key: `${index}`,
                                                 length: 0,
-                                                text: `Task ${data.length + 1}`,
-                                                edititingTask: true,
-                                                editingLength: true,
+                                                text: `Task ${index}`,
                                             },
                                         });
                                     }}
@@ -394,7 +432,21 @@ export default function Table() {
                                 </Button>
                             </td>
                             <td></td>
-                            <td></td>
+                            <td>
+                                <Button
+                                    isLoading={loading}
+                                    loadingText="Saving..."
+                                    colorScheme="purple"
+                                    isDisabled={saved}
+                                    leftIcon={<IoIosSave />}
+                                    onClick={() => {
+                                        updateProject({ tasks: data });
+                                    }}
+                                    className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md transition duration-100 ease-in-out"
+                                >
+                                    Save
+                                </Button>
+                            </td>
                         </tr>
                     </tfoot>
                 </table>
@@ -403,13 +455,13 @@ export default function Table() {
             <div
                 className="pert-chart"
                 style={{
-                    width: 800,
+                    width: 600,
                     height: 400,
                 }}
             >
                 <PertChart
                     data={data}
-                    containerWidth={800}
+                    containerWidth={600}
                     containerHeight={400}
                 />
             </div>

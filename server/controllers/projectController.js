@@ -1,4 +1,4 @@
-const Project = require("../models/projectModel");
+const { Project, Task } = require("../models/projectModel");
 const User = require("../models/userModel");
 
 const validateTitle = (value) => {
@@ -77,7 +77,11 @@ const getOne = async (req, res) => {
         const project = await Project.findOne({
             _id: projectId,
             userId: _id,
-        }).select("-__v -userId");
+        })
+            .select("-__v -userId")
+            .populate("tasks", "-__v -projectId -_id");
+
+        console.log("project", project);
         res.json({
             status: "success",
             message: "Project successfully retrieved",
@@ -92,13 +96,15 @@ const getOne = async (req, res) => {
 };
 
 const deleteProject = async (req, res) => {
-    const { id } = req.params;
+    const { projectId } = req.params;
     const { _id } = req.user;
     try {
-        const result = await Project.deleteOne({
-            _id: id,
-            userId: _id,
-        });
+        // const result = await Project.deleteOne({
+        //     _id: id,
+        //     userId: _id,
+        // });
+
+        const result = await Project.findOneAndDelete(projectId);
 
         if (result.deletedCount === 0) {
             return res.status(401).json({
@@ -107,11 +113,11 @@ const deleteProject = async (req, res) => {
             });
         }
 
-        await User.findByIdAndUpdate(
-            _id,
-            { $pull: { projects: id } },
-            { new: true }
-        );
+        // await User.findByIdAndUpdate(
+        //     _id,
+        //     { $pull: { projects: projectId } },
+        //     { new: true }
+        // );
         const { projects } = await User.findById(
             _id,
             "-password -__v -username -_id"
@@ -134,15 +140,31 @@ const deleteProject = async (req, res) => {
 
 const updateProject = async (req, res) => {
     const { projectId } = req.params;
-    const projectData = req.body;
+    const projectData = { ...req.body, userId: req.user._id };
     console.log("projectData", projectData);
-    const titleError = validateTitle(projectData.title);
-    if (titleError !== true) {
-        return res.status(401).json({
-            status: "error",
-            message: titleError,
-        });
+    if (projectData.title) {
+        const titleError = validateTitle(projectData.title);
+        if (titleError !== true) {
+            return res.status(401).json({
+                status: "error",
+                message: titleError,
+            });
+        }
     }
+    if (projectData.tasks) {
+        await Task.deleteMany({ projectId });
+        if (projectData.tasks.length > 0) {
+            idsArray = await Task.insertMany(
+                projectData.tasks.map((task) => ({
+                    ...task,
+                    projectId,
+                }))
+            );
+            projectData.tasks = idsArray.map((task) => task._id);
+            console.log("projectData inserted", projectData);
+        }
+    }
+
     try {
         const project = await Project.findByIdAndUpdate(
             projectId,
@@ -150,7 +172,10 @@ const updateProject = async (req, res) => {
             {
                 new: true,
             }
-        ).select("-__v -userId");
+        )
+            .select("-__v -userId")
+            .populate("tasks", "-__v -projectId -_id")
+            .exec();
         project.save();
         res.json({
             status: "success",

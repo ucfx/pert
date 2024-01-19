@@ -231,23 +231,23 @@ const checkIsAvailable = async (req, res) => {
     }
 };
 
-// const delete=async (req, res)=> {
-//     try {
-//         const user = await User.findByIdAndDelete(req.params.id);
-//         res.json({
-//             status: "success",
-//             message: "User successfully deleted",
-//             data: {
-//                 user,
-//             },
-//         });
-//     } catch (error) {
-//         res.json({
-//             status: "error",
-//             message: error.message,
-//         });
-//     }
-// }
+const deleteUser = async (req, res) => {
+    try {
+        const user = await User.findOneAndDelete(req.params.id);
+        res.json({
+            status: "success",
+            message: "User successfully deleted",
+            data: {
+                user,
+            },
+        });
+    } catch (error) {
+        res.json({
+            status: "error",
+            message: error.message,
+        });
+    }
+};
 
 module.exports = {
     create,
@@ -258,4 +258,5 @@ module.exports = {
     update,
     checkIsAvailable,
     logout,
+    deleteUser,
 };

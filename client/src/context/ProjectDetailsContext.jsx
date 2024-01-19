@@ -17,7 +17,6 @@ export const ProjectDetailsProvider = ({ children }) => {
                 } = await axios.get(`/api/projects/${projectId}`, {
                     signal: abortController.signal,
                 });
-                console.log("projects Details context ", project);
                 setData(project);
             } catch (error) {
                 console.log(error);
@@ -35,15 +34,7 @@ export const ProjectDetailsProvider = ({ children }) => {
     }, []);
 
     const updateData = async (newData) => {
-        try {
-            const {
-                data: { project },
-            } = await axios.put(`/api/projects/${projectId}`, newData);
-            console.log("projects tasks ", project);
-            setData(project);
-        } catch (error) {
-            console.log(error);
-        }
+        setData(newData);
     };
 
     return (
