@@ -26,7 +26,7 @@ import { ProjectDetailsProvider } from "context/ProjectDetailsContext";
 function App() {
     const { user } = useAuth();
     return (
-        <MantineProvider forceColorScheme="dark">
+        <MantineProvider forceColorScheme="light">
             <Router>
                 <Routes>
                     <Route

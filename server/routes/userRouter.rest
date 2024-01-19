@@ -51,5 +51,5 @@ Content-Type: application/json
 
 
 ### delete user
-DELETE http://localhost:3000/users/1
+DELETE http://localhost:3000/users/65a9b538a0cb83f0fe640fcc
 

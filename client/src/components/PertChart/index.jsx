@@ -2,6 +2,7 @@ import { useRef, useEffect, useMemo, useState } from "react";
 import { Pert, Drawer } from "assets/js";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 import { useToast } from "@chakra-ui/react";
+import { CiCircleMinus, CiCirclePlus, CiUndo } from "react-icons/ci";
 import "./style.css";
 function useOnScreen(ref) {
     const [isIntersecting, setIntersecting] = useState(false);
@@ -146,13 +147,13 @@ const PertChart = ({ data, containerWidth, containerHeight }) => {
                             })()}
                         <div className="chart-controls">
                             <button onClick={() => zoomOut()}>
-                                <i className="fa-regular fa-circle-minus" />
+                                <CiCircleMinus />
                             </button>
                             <button onClick={() => centerView(imageScale)}>
-                                <i className="fa-regular fa-undo" />
+                                <CiUndo />
                             </button>
                             <button onClick={() => zoomIn()}>
-                                <i className="fa-regular fa-circle-plus" />
+                                <CiCirclePlus />
                             </button>
                         </div>
                         <TransformComponent
@@ -161,7 +162,7 @@ const PertChart = ({ data, containerWidth, containerHeight }) => {
                                 height: "100%",
                             }}
                         >
-                            <svg ref={svgElement} />
+                            <svg ref={svgElement} className="svg-chart" />
                         </TransformComponent>
                     </>
                 )}

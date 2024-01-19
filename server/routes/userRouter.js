@@ -9,6 +9,6 @@ router.post("/logout", userController.logout);
 router.put("/:id", userController.update);
 router.get("/user-info", auth.authenticate, userController.getUserInfo);
 router.get("/check-is-available/:username", userController.checkIsAvailable);
-// router.delete("/:id", userController.delete);
+router.delete("/:id", userController.deleteUser);
 
 module.exports = router;
