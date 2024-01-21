@@ -13,6 +13,7 @@ import {
     TabPanels,
     Tab,
     TabPanel,
+    TabIndicator,
 } from "@chakra-ui/react";
 import { Drawer } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
@@ -27,6 +28,7 @@ import UpdateProjectTitle from "pages/Projects/UpdateProjectTitle";
 import { BsDiagram3Fill } from "react-icons/bs";
 import { IoIosArrowBack, IoIosSave } from "react-icons/io";
 import { MdContentCopy } from "react-icons/md";
+import { FaLongArrowAltRight } from "react-icons/fa";
 
 import axios from "axios";
 
@@ -97,8 +99,8 @@ const ProjectDetails = () => {
             case actionTypes.ADD_TASK_EDITABLE:
                 return produce(state, (draftState) => {
                     draftState.editable.push({
-                        editingTask: false,
-                        editingLength: false,
+                        editingTask: true,
+                        editingLength: true,
                     });
                 });
 
@@ -128,6 +130,7 @@ const ProjectDetails = () => {
                             );
                         }
                     });
+                    draftState.editable.splice(action.payload.index, 1);
                 });
 
             case actionTypes.UPDATE_TASK_NAME:
@@ -166,11 +169,13 @@ const ProjectDetails = () => {
         editable: [],
     });
 
-    const [nodes, levels, links] = useMemo(() => {
+    const [nodes, levels, links, criticalPaths] = useMemo(() => {
         try {
             const pert = new Pert(data.tasks).solve();
             console.log("Done");
-            return [pert.nodes, pert.levels, pert.links];
+            console.log(pert.criticalPaths);
+
+            return [pert.nodes, pert.levels, pert.links, pert.criticalPaths];
         } catch (err) {
             console.log(err);
             return [[], {}, []];
@@ -204,7 +209,7 @@ const ProjectDetails = () => {
                     .put(`/api/projects/${projectId}`, data)
                     .then(({ data: { project } }) => {
                         console.log("saved");
-                        // saveProject(project);
+                        updateData(project);
                         setSaved(true);
                         resolve();
                     })
@@ -241,6 +246,13 @@ const ProjectDetails = () => {
             },
         });
     };
+
+    const nodesToDisplay = nodes.slice(1, -1);
+
+    const taskNames = nodesToDisplay.map((task) => task.text);
+    const freeFloats = nodesToDisplay.map((task) => task.freeFloat);
+    const totalFloats = nodesToDisplay.map((task) => task.totalFloat);
+
     return (
         <Flex
             className="project-details"
@@ -466,14 +478,52 @@ const ProjectDetails = () => {
                             saved={saved}
                         />
                     </Drawer>
-                    <Tabs isFitted variant="enclosed">
-                        <TabList mb="1em">
-                            <Tab>Pert</Tab>
-                            <Tab>Gant</Tab>
-                            <Tab>Floats</Tab>
+                    <Tabs
+                        isFitted
+                        variant="unstyled"
+                        height={"calc(100% - 42px)"}
+                    >
+                        <TabList>
+                            <Tab
+                                border={"2px solid"}
+                                borderColor={"purple.100"}
+                                _selected={{
+                                    color: "white",
+                                    bg: "purple.400",
+                                    borderColor: "purple.400",
+                                }}
+                                _hover={{ borderColor: "purple.400" }}
+                            >
+                                Pert
+                            </Tab>
+                            <Tab
+                                border={"2px solid"}
+                                borderColor={"purple.100"}
+                                _selected={{
+                                    color: "white",
+                                    bg: "purple.400",
+                                    borderColor: "purple.400",
+                                }}
+                                _hover={{ borderColor: "purple.400" }}
+                            >
+                                Gant
+                            </Tab>
+                            <Tab
+                                border={"2px solid"}
+                                borderColor={"purple.100"}
+                                _selected={{
+                                    color: "white",
+                                    bg: "purple.400",
+                                    borderColor: "purple.400",
+                                }}
+                                _hover={{ borderColor: "purple.400" }}
+                            >
+                                Floats
+                            </Tab>
                         </TabList>
-                        <TabPanels>
-                            <TabPanel>
+
+                        <TabPanels height={"full"}>
+                            <TabPanel height={"full"} pl={0} pr={0}>
                                 <Flex
                                     ref={chartContainer}
                                     w={"100%"}
@@ -494,25 +544,140 @@ const ProjectDetails = () => {
                                 <p>Gant</p>
                             </TabPanel>
                             <TabPanel>
-                                <p>Floats</p>
+                                <Flex>
+                                    <Box w={"100%"}>
+                                        <Heading as="h3" size="md" mb={4}>
+                                            Floats
+                                        </Heading>
+                                        <table style={{ width: "100%" }}>
+                                            <thead>
+                                                <tr>
+                                                    <th
+                                                        style={{
+                                                            backgroundColor:
+                                                                "#D5D5E2",
+                                                        }}
+                                                    >
+                                                        Task
+                                                    </th>
+                                                    {taskNames.map(
+                                                        (task, index) => (
+                                                            <th
+                                                                key={index}
+                                                                style={{
+                                                                    backgroundColor:
+                                                                        nodesToDisplay[
+                                                                            index
+                                                                        ]
+                                                                            .totalFloat ===
+                                                                        0
+                                                                            ? "#ffa87d"
+                                                                            : "#D5D5E2",
+                                                                }}
+                                                            >
+                                                                {task}
+                                                            </th>
+                                                        )
+                                                    )}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td
+                                                        style={{
+                                                            backgroundColor:
+                                                                "#D5D5E2",
+                                                        }}
+                                                    >
+                                                        FF (ML)
+                                                    </td>
+                                                    {freeFloats.map(
+                                                        (freeFloat, index) => (
+                                                            <td key={index}>
+                                                                {freeFloat}
+                                                            </td>
+                                                        )
+                                                    )}
+                                                </tr>
+                                                <tr>
+                                                    <td
+                                                        style={{
+                                                            backgroundColor:
+                                                                "#D5D5E2",
+                                                        }}
+                                                    >
+                                                        TF (MT)
+                                                    </td>
+                                                    {totalFloats.map(
+                                                        (totalFloat, index) => (
+                                                            <td key={index}>
+                                                                {totalFloat}
+                                                            </td>
+                                                        )
+                                                    )}
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <Heading as="h3" size="md" mt={4}>
+                                            Critical Path
+                                        </Heading>
+                                        <Flex
+                                            justifyContent={"space-between"}
+                                            alignItems={"flex-start"}
+                                            flexDirection={"column"}
+                                            gap={2}
+                                            mt={4}
+                                        >
+                                            {criticalPaths.map(
+                                                (path, index) => (
+                                                    <Flex
+                                                        key={index}
+                                                        p={2}
+                                                        justifyContent={
+                                                            "center"
+                                                        }
+                                                        gap={2}
+                                                        alignItems={"center"}
+                                                        bg={"purple.100"}
+                                                        borderRadius={"md"}
+                                                    >
+                                                        {path.map(
+                                                            (task, index) => (
+                                                                <>
+                                                                    <span
+                                                                        key={
+                                                                            index
+                                                                        }
+                                                                        style={{
+                                                                            fontWeight:
+                                                                                "bold",
+                                                                        }}
+                                                                    >
+                                                                        {
+                                                                            task.text
+                                                                        }
+                                                                    </span>
+                                                                    {index !==
+                                                                        path.length -
+                                                                            1 && (
+                                                                        <FaLongArrowAltRight
+                                                                            fontSize={
+                                                                                22
+                                                                            }
+                                                                        />
+                                                                    )}
+                                                                </>
+                                                            )
+                                                        )}
+                                                    </Flex>
+                                                )
+                                            )}
+                                        </Flex>
+                                    </Box>
+                                </Flex>
                             </TabPanel>
                         </TabPanels>
                     </Tabs>
-                    {/* <Flex
-                        ref={chartContainer}
-                        w={"100%"}
-                        h={"100%"}
-                        className="pert-chart"
-                    >
-                        <PertChart
-                            data={data.tasks}
-                            containerWidth={imageDimensions.width}
-                            containerHeight={imageDimensions.height}
-                            nodes={nodes}
-                            levels={levels}
-                            links={links}
-                        />
-                    </Flex> */}
                 </Box>
             )}
         </Flex>

@@ -46,6 +46,8 @@ class Pert {
             lateStart: lastTask.earlyFinish,
             level: levelKeys.length,
             critical: true,
+            freeFloat: 0,
+            totalFloat: 0,
         });
         this.levels[levelKeys.length] = [`${this.nodes.length - 1}`];
 
@@ -99,6 +101,18 @@ class Pert {
         task.lateFinish = lateFinish;
         task.lateStart = task.lateFinish - task.length;
         task.critical = task.earlyFinish === task.lateFinish;
+
+        if (!task.critical) {
+            task.freeFloat =
+                (successors.length === 0
+                    ? lateFinishLastTask
+                    : Math.min(...successors.map((s) => s.earlyStart))) -
+                task.earlyFinish;
+            task.totalFloat = task.lateFinish - task.earlyFinish;
+        } else {
+            task.freeFloat = 0;
+            task.totalFloat = 0;
+        }
     }
 
     getLevels() {
@@ -189,11 +203,54 @@ class Pert {
         return linkData;
     }
 
+    getAllCriticalPaths() {
+        let criticalPaths = [];
+        const links = this.getNodeLinks();
+        const startNodes = links.filter(
+            (link) => link.from === "0" && link.critical
+        );
+
+        startNodes.forEach((startNode) => {
+            let path = [startNode];
+            const findPath = (node) => {
+                const nodeLinks = links.filter(
+                    (link) => link.from === node.to && link.critical
+                );
+                if (nodeLinks.length === 0) {
+                    criticalPaths.push([...path]);
+                } else {
+                    nodeLinks.forEach((nodeLink) => {
+                        path.push(nodeLink);
+                        findPath(nodeLink);
+                        path.pop();
+                    });
+                }
+            };
+            findPath(startNode);
+        });
+
+        let paths = [];
+        criticalPaths.forEach((path) => {
+            let pathStr = path.map((_) => _.to);
+            if (!paths.includes(pathStr)) {
+                paths.push(pathStr);
+            }
+        });
+        criticalPaths = paths.map((path) =>
+            path.slice(0, -1).map((_) => {
+                return { text: this.nodes[_].text, key: _ };
+            })
+        );
+
+        return criticalPaths;
+    }
+
     solve() {
         return {
             nodes: this.calculatePERT(),
             levels: this.levels,
             links: this.getNodeLinks(),
+            criticalPaths: this.getAllCriticalPaths(),
         };
     }
 }
