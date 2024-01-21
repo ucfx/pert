@@ -153,3 +153,8 @@ project-card .bold {
 .project-details h2 button:active .pencil-icon {
     transform: scale(0.8);
 }
+
+.mantine-Drawer-overlay {
+    background:
+        linear-gradient(to left, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0)) !important;
+}
