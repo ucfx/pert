@@ -1,10 +1,10 @@
 import { useRef, useEffect, useMemo, useState } from "react";
-import { Drawer } from "assets/js";
+import { Pert, Drawer } from "assets/js";
 import { TransformComponent, TransformWrapper } from "react-zoom-pan-pinch";
 import { useToast } from "@chakra-ui/react";
 import { CiCircleMinus, CiCirclePlus, CiUndo } from "react-icons/ci";
 import "./style.css";
-const useOnScreen = (ref) => {
+function useOnScreen(ref) {
     const [isIntersecting, setIntersecting] = useState(false);
 
     const observer = useMemo(
@@ -18,19 +18,12 @@ const useOnScreen = (ref) => {
     useEffect(() => {
         observer.observe(ref.current);
         return () => observer.disconnect();
-    }, [ref.current]);
+    }, []);
 
     return isIntersecting;
-};
+}
 
-const PertChart = ({
-    data,
-    containerWidth,
-    containerHeight,
-    nodes,
-    levels,
-    links,
-}) => {
+const PertChart = ({ data, containerWidth, containerHeight }) => {
     const svgElement = useRef();
     const isOnScreen = useOnScreen(svgElement);
     const func = useRef();
@@ -39,6 +32,16 @@ const PertChart = ({
     const [imageNaturalHeight, setImageNaturalHeight] = useState(0);
 
     const toast = useToast({ position: "top" });
+    const [nodes, levels, links] = useMemo(() => {
+        try {
+            const pert = new Pert(data).solve();
+            console.log("Done");
+            return [pert.nodes, pert.levels, pert.links];
+        } catch (err) {
+            console.log(err);
+            return [[], {}, []];
+        }
+    }, [JSON.stringify(data)]);
 
     const scaleUp = true;
     const zoomFactor = 8;

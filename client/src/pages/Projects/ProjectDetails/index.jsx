@@ -1,246 +1,27 @@
-import { Pert } from "assets/js";
 import usePageTitle from "hooks/usePageTitle";
-import { useEffect, useReducer, useState, useMemo, useRef } from "react";
-import {
-    Box,
-    Heading,
-    Flex,
-    Button,
-    Text,
-    useToast,
-    Tabs,
-    TabList,
-    TabPanels,
-    Tab,
-    TabPanel,
-} from "@chakra-ui/react";
-import { Drawer } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
+import { useEffect } from "react";
+import { Box, Heading, Grid, Flex, Button, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
-import { produce } from "immer";
-import PertChart from "components/PertChart";
-import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+
 import DeletePopover from "components/DeletePopover";
 import Table from "components/Table";
 import useProjectDetails from "hooks/useProjectDetails";
 import UpdateProjectTitle from "pages/Projects/UpdateProjectTitle";
 import { BsDiagram3Fill } from "react-icons/bs";
-import { IoIosArrowBack, IoIosSave } from "react-icons/io";
+import { IoIosArrowBack } from "react-icons/io";
 import { MdContentCopy } from "react-icons/md";
-
-import axios from "axios";
-
 import "../style.css";
 const ProjectDetails = () => {
     const { updatePageTitle } = usePageTitle();
-    const location = useLocation();
-    const [opened, { open, close }] = useDisclosure(false);
-    const [saved, setSaved] = useState(true);
-    const [saveLoading, setSaveLoading] = useState(false);
-    const toast = useToast({ position: "top", isClosable: true });
-    const { projectId } = useParams();
-    const chartContainer = useRef();
-    const [imageDimensions, setImageDimensions] = useState({
-        width: 50,
-        height: 50,
-    });
-    useEffect(() => {
-        if (!chartContainer.current) return;
-        const resizeObserver = new ResizeObserver(() => {
-            setImageDimensions({
-                width: chartContainer.current.offsetWidth,
-                height: chartContainer.current.offsetHeight,
-            });
-        });
-        resizeObserver.observe(chartContainer.current);
-
-        return () => resizeObserver.disconnect();
-    }, [chartContainer.current]);
-
     const { data: project, loading, updateData } = useProjectDetails();
-
+    const location = useLocation();
     useEffect(() => {
         if (project) updatePageTitle("Projects", "Projects | " + project.title);
     }, [updatePageTitle, project]);
     const navigate = useNavigate();
+    console.log("project", project);
 
-    const actionTypes = {
-        SET_PROJECT: "SET_PROJECT",
-        ADD_TASK: "ADD_TASK",
-        DELETE_TASK: "DELETE_TASK",
-        SAVE_PROJECT: "SAVE_PROJECT",
-        UPDATE_TASK_LENGTH: "UPDATE_TASK_LENGTH",
-        UPDATE_TASK_NAME: "UPDATE_TASK_NAME",
-        TOGGLE_EDITING_NAME: "TOGGLE_EDITING_NAME",
-        TOGGLE_EDITING_LENGTH: "TOGGLE_EDITING_LENGTH",
-        TOGGLE_EDITING_DEPENDS_ON: "TOGGLE_EDITING_DEPENDS_ON",
-        UPDATE_TASK_DEPENDS_ON: "UPDATE_TASK_DEPENDS_ON",
-        DELETE_KEY_FROM_EDITABLE: "DELETE_KEY_FROM_EDITABLE",
-        ADD_TASK_EDITABLE: "ADD_TASK_EDITABLE",
-    };
-
-    const reducer = (state, action) => {
-        setSaved(false);
-        switch (action.type) {
-            case actionTypes.SET_PROJECT:
-                setSaved(true);
-                return produce(state, (draftState) => {
-                    draftState.tasks = action.payload.tasks;
-                    draftState.editable = action.payload.editable;
-                });
-
-            case actionTypes.ADD_TASK:
-                return produce(state, (draftState) => {
-                    draftState.tasks.push(action.payload);
-                });
-
-            case actionTypes.ADD_TASK_EDITABLE:
-                return produce(state, (draftState) => {
-                    draftState.editable.push({
-                        editingTask: false,
-                        editingLength: false,
-                    });
-                });
-
-            case actionTypes.DELETE_TASK:
-                return produce(state, (draftState) => {
-                    draftState.tasks.forEach((task) => {
-                        if (task.dependsOn) {
-                            task.dependsOn = task.dependsOn.filter(
-                                (key) => key !== action.payload.taskKey
-                            );
-                        }
-                    });
-                    draftState.tasks.splice(action.payload.index, 1);
-                    draftState.tasks.forEach((task) => {
-                        if (parseInt(task.key) > action.payload.taskKey) {
-                            task.key = `${task.key - 1}`;
-                        }
-                        if (task.dependsOn) {
-                            if (task.dependsOn.length === 0) {
-                                delete task.dependsOn;
-                                return;
-                            }
-                            task.dependsOn = task.dependsOn.map((key) =>
-                                parseInt(key) > action.payload.taskKey
-                                    ? `${parseInt(key) - 1}`
-                                    : key
-                            );
-                        }
-                    });
-                });
-
-            case actionTypes.UPDATE_TASK_NAME:
-                return produce(state, (draftState) => {
-                    draftState.tasks[action.payload.index].text =
-                        action.payload.text;
-                });
-            case actionTypes.UPDATE_TASK_LENGTH:
-                return produce(state, (draftState) => {
-                    draftState.tasks[action.payload.index].length =
-                        action.payload.length;
-                });
-            case actionTypes.UPDATE_TASK_DEPENDS_ON:
-                return produce(state, (draftState) => {
-                    draftState.tasks[action.payload.index].dependsOn =
-                        action.payload.dependsOn;
-                });
-            case actionTypes.TOGGLE_EDITING_NAME:
-                return produce(state, (draftState) => {
-                    draftState.editable[action.payload.index].editingTask =
-                        !draftState.editable[action.payload.index].editingTask;
-                });
-            case actionTypes.TOGGLE_EDITING_LENGTH:
-                return produce(state, (draftState) => {
-                    draftState.editable[action.payload.index].editingLength =
-                        !draftState.editable[action.payload.index]
-                            .editingLength;
-                });
-            default:
-                return state;
-        }
-    };
-
-    const [data, dispatch] = useReducer(reducer, {
-        tasks: [],
-        editable: [],
-    });
-
-    const [nodes, levels, links] = useMemo(() => {
-        try {
-            const pert = new Pert(data.tasks).solve();
-            console.log("Done");
-            return [pert.nodes, pert.levels, pert.links];
-        } catch (err) {
-            console.log(err);
-            return [[], {}, []];
-        }
-    }, [JSON.stringify(data.tasks)]);
-
-    useEffect(() => {
-        if (project)
-            dispatch({
-                type: "SET_PROJECT",
-                payload: {
-                    tasks: project.tasks,
-                    editable: Array.from(
-                        { length: project.tasks.length },
-                        () => ({
-                            editingTask: false,
-                            editingLength: false,
-                        })
-                    ),
-                },
-            });
-    }, [project]);
-
-    const updateProject = (data) => {
-        setSaveLoading(true);
-        console.log(data);
-        console.log(projectId);
-        const postData = (data) => {
-            return new Promise((resolve, reject) => {
-                axios
-                    .put(`/api/projects/${projectId}`, data)
-                    .then(({ data: { project } }) => {
-                        console.log("saved");
-                        // saveProject(project);
-                        setSaved(true);
-                        resolve();
-                    })
-                    .catch((err) => {
-                        console.log(err);
-                        reject();
-                    })
-                    .finally(() => {
-                        setSaveLoading(false);
-                    });
-            });
-        };
-
-        toast.closeAll();
-        toast.promise(postData(data), {
-            loading: {
-                title: "Saving...",
-                description: "Please wait.",
-            },
-            success: () => {
-                return {
-                    title: "Success!",
-                    description: "Saved successfully.",
-                    duration: 1500,
-                    colorScheme: "purple",
-                };
-            },
-            error: () => {
-                return {
-                    title: "An error occurred.",
-                    description: "Something went wrong!",
-                    duration: 3000,
-                };
-            },
-        });
-    };
     return (
         <Flex
             className="project-details"
@@ -299,6 +80,10 @@ const ProjectDetails = () => {
                                 background: "purple.300",
                             }}
                         >
+                            {/* <i
+                                className="fa-solid fa-chevron-left "
+                                onClick={() => navigate(-1)}
+                            /> */}
                             <IoIosArrowBack
                                 onClick={() => navigate(-1)}
                                 className="back-icon"
@@ -306,6 +91,7 @@ const ProjectDetails = () => {
                                     display: "inline-block",
                                 }}
                             />
+                            {/* <i className="fa-duotone fa-diagram-project" /> */}
                             <BsDiagram3Fill
                                 style={{
                                     display: "inline-block",
@@ -345,26 +131,10 @@ const ProjectDetails = () => {
                                 >
                                     <MdContentCopy className="copy-icon" />
                                 </i>
-                            </Flex>{" "}
+                            </Flex>
                         </Heading>
-                        <Flex align={"center"} gap={5}>
-                            <Button
-                                onClick={open}
-                                colorScheme="purple"
-                                mt={4}
-                                mb={4}
-                                size="sm"
-                                variant="outline"
-                                width="fit-content"
-                                className="show-tasks"
-                                _hover={{
-                                    background: "purple.100",
-                                }}
-                            >
-                                Show Tasks
-                            </Button>
-                            <DeletePopover projectId={project._id} />
-                        </Flex>
+
+                        <DeletePopover projectId={project._id} />
                     </>
                 </Flex>
             )}
@@ -412,107 +182,9 @@ const ProjectDetails = () => {
                         scrollbarGutter: "stable both-edges",
                     }}
                 >
-                    <Drawer
-                        offset={1}
-                        radius="20px 0 0 20px"
-                        size={"ml"}
-                        opened={opened}
-                        onClose={close}
-                        position="right"
-                        transitionProps={{
-                            transition: "fade",
-                            duration: 150,
-                            timingFunction: "linear",
-                        }}
-                        withCloseButton={false}
-                    >
-                        <Drawer.Header>
-                            <Drawer.Title>Tasks</Drawer.Title>
-                            <Flex ml="auto" gap={2}>
-                                <Button
-                                    colorScheme="purple"
-                                    leftIcon={<IoIosSave />}
-                                    mt={4}
-                                    mb={4}
-                                    size="sm"
-                                    className="show-tasks"
-                                    isLoading={saveLoading}
-                                    onClick={() =>
-                                        updateProject({ tasks: data.tasks })
-                                    }
-                                    loadingText="Saving..."
-                                    isDisabled={saved}
-                                >
-                                    Save
-                                </Button>
-                                <Button
-                                    onClick={close}
-                                    colorScheme="purple"
-                                    mt={4}
-                                    mb={4}
-                                    size="sm"
-                                    variant="outline"
-                                    className="show-tasks"
-                                >
-                                    Close
-                                </Button>
-                            </Flex>
-                        </Drawer.Header>
-                        <Table
-                            data={data}
-                            actionTypes={actionTypes}
-                            dispatch={dispatch}
-                            setSaved={setSaved}
-                            saved={saved}
-                        />
-                    </Drawer>
-                    <Tabs isFitted variant="enclosed">
-                        <TabList mb="1em">
-                            <Tab>Pert</Tab>
-                            <Tab>Gant</Tab>
-                            <Tab>Floats</Tab>
-                        </TabList>
-                        <TabPanels>
-                            <TabPanel>
-                                <Flex
-                                    ref={chartContainer}
-                                    w={"100%"}
-                                    h={"100%"}
-                                    className="pert-chart"
-                                >
-                                    <PertChart
-                                        data={data.tasks}
-                                        containerWidth={imageDimensions.width}
-                                        containerHeight={imageDimensions.height}
-                                        nodes={nodes}
-                                        levels={levels}
-                                        links={links}
-                                    />
-                                </Flex>
-                            </TabPanel>
-                            <TabPanel>
-                                <p>Gant</p>
-                            </TabPanel>
-                            <TabPanel>
-                                <p>Floats</p>
-                            </TabPanel>
-                        </TabPanels>
-                    </Tabs>
-                    {/* <Flex
-                        ref={chartContainer}
-                        w={"100%"}
-                        h={"100%"}
-                        className="pert-chart"
-                    >
-                        <PertChart
-                            data={data.tasks}
-                            containerWidth={imageDimensions.width}
-                            containerHeight={imageDimensions.height}
-                            nodes={nodes}
-                            levels={levels}
-                            links={links}
-                        />
-                    </Flex> */}
+                    <Flex justify={"space-between"} gap={4} className="grid">
+                        <Table initialState={project.tasks} />
+                    </Flex>
                 </Box>
             )}
         </Flex>
