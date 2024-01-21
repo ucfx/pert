@@ -82,20 +82,20 @@ export default function Table({ initialState = [] }) {
         switch (action.type) {
             case actionTypes.ADD_TASK:
                 return produce(state, (draftState) => {
-                    draftState.push(action.payload);
+                    draftState.tasks.push(action.payload);
                 });
 
             case actionTypes.DELETE_TASK:
                 return produce(state, (draftState) => {
-                    draftState.forEach((task) => {
+                    draftState.tasks.forEach((task) => {
                         if (task.dependsOn) {
                             task.dependsOn = task.dependsOn.filter(
                                 (key) => key !== action.payload.taskKey
                             );
                         }
                     });
-                    draftState.splice(action.payload.index, 1);
-                    draftState.forEach((task) => {
+                    draftState.tasks.splice(action.payload.index, 1);
+                    draftState.tasks.forEach((task) => {
                         if (parseInt(task.key) > action.payload.taskKey) {
                             task.key = `${task.key - 1}`;
                         }
@@ -115,75 +115,42 @@ export default function Table({ initialState = [] }) {
 
             case actionTypes.UPDATE_TASK_NAME:
                 return produce(state, (draftState) => {
-                    draftState[action.payload.index].text = action.payload.text;
+                    draftState.tasks[action.payload.index].text =
+                        action.payload.text;
                 });
             case actionTypes.UPDATE_TASK_LENGTH:
                 return produce(state, (draftState) => {
-                    draftState[action.payload.index].length =
+                    draftState.tasks[action.payload.index].length =
                         action.payload.length;
                 });
             case actionTypes.UPDATE_TASK_DEPENDS_ON:
                 return produce(state, (draftState) => {
-                    draftState[action.payload.index].dependsOn =
+                    draftState.tasks[action.payload.index].dependsOn =
                         action.payload.dependsOn;
                 });
             case actionTypes.TOGGLE_EDITING_NAME:
                 return produce(state, (draftState) => {
-                    draftState[action.payload.index].editingTask =
-                        !draftState[action.payload.index].editingTask;
+                    draftState.editable[action.payload.index].editingTask =
+                        !draftState.editable[action.payload.index].editingTask;
                 });
             case actionTypes.TOGGLE_EDITING_LENGTH:
                 return produce(state, (draftState) => {
-                    draftState[action.payload.index].editingLength =
-                        !draftState[action.payload.index].editingLength;
+                    draftState.editable[action.payload.index].editingLength =
+                        !draftState.editable[action.payload.index]
+                            .editingLength;
                 });
             default:
                 return state;
         }
     };
 
-    const editReducer = (state, action) => {
-        switch (action.type) {
-            case actionTypes.ADD_TASK_EDITABLE:
-                return produce(state, (draftState) => {
-                    draftState.push({
-                        editingTask: true,
-                        editingLength: true,
-                    });
-                });
-            case actionTypes.TOGGLE_EDITING_NAME:
-                return produce(state, (draftState) => {
-                    draftState[action.payload.index].editingTask =
-                        !draftState[action.payload.index].editingTask;
-                });
-            case actionTypes.TOGGLE_EDITING_LENGTH:
-                return produce(state, (draftState) => {
-                    draftState[action.payload.index].editingLength =
-                        !draftState[action.payload.index].editingLength;
-                });
-            case actionTypes.TOGGLE_EDITING_DEPENDS_ON:
-                return produce(state, (draftState) => {
-                    draftState[action.payload.index] =
-                        !draftState[action.payload.index];
-                });
-            case actionTypes.DELETE_KEY_FROM_EDITABLE:
-                return produce(state, (draftState) => {
-                    delete draftState[action.payload.index];
-                });
-
-            default:
-                return state;
-        }
-    };
-
-    const [data, dispatch] = useReducer(reducer, initialState);
-    const [editable, dispatch2] = useReducer(
-        editReducer,
-        Array.from({ length: initialState.length }, () => ({
+    const [data, dispatch] = useReducer(reducer, {
+        tasks: initialState,
+        editable: Array.from({ length: initialState.length }, () => ({
             editingTask: false,
             editingLength: false,
-        }))
-    );
+        })),
+    });
 
     useEffect(() => {
         console.log("saved", saved);
@@ -201,68 +168,54 @@ export default function Table({ initialState = [] }) {
                         </tr>
                     </thead>
                     <tbody>
-                        {data.map((task, index) => (
-                            <tr key={task.key}>
-                                {task.text && !editable[index].editingTask ? (
-                                    <td
-                                        className="group"
-                                        onDoubleClick={() => {
-                                            dispatch2({
-                                                type: actionTypes.TOGGLE_EDITING_NAME,
-                                                payload: {
-                                                    index: index,
-                                                },
-                                            });
-                                        }}
-                                    >
-                                        <div className="flex flex-row w-[100%] justify-between">
-                                            {task.text}
-
-                                            <CloseButton
-                                                className="hidden group-hover:block ml-2 text-red-500"
-                                                onClick={() => {
-                                                    dispatch({
-                                                        type: actionTypes.DELETE_TASK,
-                                                        payload: {
-                                                            index: index,
-                                                            taskKey: task.key,
-                                                        },
-                                                    });
-                                                }}
-                                            />
-                                        </div>
-                                    </td>
-                                ) : (
-                                    <td>
-                                        <TextInput
-                                            placeholder="Task Name"
-                                            type="text"
-                                            onFocus={(e) => {
-                                                if (e.target.value === "")
-                                                    e.target.value =
-                                                        task.text || "";
-                                            }}
-                                            onBlur={(e) => {
-                                                if (e.target.value === "")
-                                                    e.target.value =
-                                                        task.text || "";
+                        {data.tasks &&
+                            data.tasks.map((task, index) => (
+                                <tr key={task.key}>
+                                    {task.text &&
+                                    !data.editable[index].editingTask ? (
+                                        <td
+                                            className="group"
+                                            onDoubleClick={() => {
                                                 dispatch({
-                                                    type: actionTypes.UPDATE_TASK_NAME,
-                                                    payload: {
-                                                        index: index,
-                                                        text: e.target.value,
-                                                    },
-                                                });
-                                                dispatch2({
                                                     type: actionTypes.TOGGLE_EDITING_NAME,
                                                     payload: {
                                                         index: index,
                                                     },
                                                 });
                                             }}
-                                            onKeyUp={(e) => {
-                                                if (e.key === "Enter") {
-                                                    e.preventDefault();
+                                        >
+                                            <div className="flex flex-row w-[100%] justify-between">
+                                                {task.text}
+
+                                                <CloseButton
+                                                    className="hidden group-hover:block ml-2 text-red-500"
+                                                    onClick={() => {
+                                                        dispatch({
+                                                            type: actionTypes.DELETE_TASK,
+                                                            payload: {
+                                                                index: index,
+                                                                taskKey:
+                                                                    task.key,
+                                                            },
+                                                        });
+                                                    }}
+                                                />
+                                            </div>
+                                        </td>
+                                    ) : (
+                                        <td>
+                                            <TextInput
+                                                placeholder="Task Name"
+                                                type="text"
+                                                onFocus={(e) => {
+                                                    if (e.target.value === "")
+                                                        e.target.value =
+                                                            task.text || "";
+                                                }}
+                                                onBlur={(e) => {
+                                                    if (e.target.value === "")
+                                                        e.target.value =
+                                                            task.text || "";
                                                     dispatch({
                                                         type: actionTypes.UPDATE_TASK_NAME,
                                                         payload: {
@@ -271,76 +224,79 @@ export default function Table({ initialState = [] }) {
                                                                 .value,
                                                         },
                                                     });
-                                                    dispatch2({
+                                                    dispatch({
                                                         type: actionTypes.TOGGLE_EDITING_NAME,
                                                         payload: {
                                                             index: index,
                                                         },
                                                     });
-                                                } else if (e.key === "Escape") {
-                                                    dispatch2({
-                                                        type: actionTypes.TOGGLE_EDITING_NAME,
-                                                        payload: {
-                                                            index: index,
-                                                        },
-                                                    });
-                                                }
-                                            }}
-                                            autoFocus
-                                        />
-                                    </td>
-                                )}
+                                                }}
+                                                onKeyUp={(e) => {
+                                                    if (e.key === "Enter") {
+                                                        e.preventDefault();
+                                                        dispatch({
+                                                            type: actionTypes.UPDATE_TASK_NAME,
+                                                            payload: {
+                                                                index: index,
+                                                                text: e.target
+                                                                    .value,
+                                                            },
+                                                        });
+                                                        dispatch({
+                                                            type: actionTypes.TOGGLE_EDITING_NAME,
+                                                            payload: {
+                                                                index: index,
+                                                            },
+                                                        });
+                                                    } else if (
+                                                        e.key === "Escape"
+                                                    ) {
+                                                        dispatch({
+                                                            type: actionTypes.TOGGLE_EDITING_NAME,
+                                                            payload: {
+                                                                index: index,
+                                                            },
+                                                        });
+                                                    }
+                                                }}
+                                                autoFocus
+                                            />
+                                        </td>
+                                    )}
 
-                                <td
-                                    onDoubleClick={(e) => {
-                                        dispatch2({
-                                            type: actionTypes.TOGGLE_EDITING_LENGTH,
-                                            payload: {
-                                                index: index,
-                                            },
-                                        });
-                                        setTimeout(() => {
-                                            e.target
-                                                .querySelector("div div input")
-                                                ?.focus();
-                                        }, 0);
-                                    }}
-                                >
-                                    {(task.length || task.length == 0) &&
-                                    !editable[index].editingLength ? (
-                                        task.length
-                                    ) : (
-                                        <TextInput
-                                            placeholder="Duration"
-                                            type="number"
-                                            onFocus={(e) => {
-                                                if (e.target.value === "")
-                                                    e.target.value =
-                                                        task.length || 0;
-                                            }}
-                                            onBlur={(e) => {
-                                                if (e.target.value === "")
-                                                    e.target.value =
-                                                        task.length || 0;
-                                                dispatch({
-                                                    type: actionTypes.UPDATE_TASK_LENGTH,
-                                                    payload: {
-                                                        index: index,
-                                                        length: parseInt(
-                                                            e.target.value || 0
-                                                        ),
-                                                    },
-                                                });
-                                                dispatch2({
-                                                    type: actionTypes.TOGGLE_EDITING_LENGTH,
-                                                    payload: {
-                                                        index: index,
-                                                    },
-                                                });
-                                            }}
-                                            onKeyUp={(e) => {
-                                                if (e.key === "Enter") {
-                                                    e.preventDefault();
+                                    <td
+                                        onDoubleClick={(e) => {
+                                            dispatch({
+                                                type: actionTypes.TOGGLE_EDITING_LENGTH,
+                                                payload: {
+                                                    index: index,
+                                                },
+                                            });
+                                            setTimeout(() => {
+                                                e.target
+                                                    .querySelector(
+                                                        "div div input"
+                                                    )
+                                                    ?.focus();
+                                            }, 0);
+                                        }}
+                                    >
+                                        {(task.length || task.length == 0) &&
+                                        !data.editable[index].editingLength ? (
+                                            task.length
+                                        ) : (
+                                            <TextInput
+                                                placeholder="Duration"
+                                                type="number"
+                                                onFocus={(e) => {
+                                                    if (e.target.value === "")
+                                                        e.target.value =
+                                                            task.length || 0;
+                                                }}
+                                                onBlur={(e) => {
+                                                    if (e.target.value === "")
+                                                        e.target.value =
+                                                            task.length || 0;
                                                     dispatch({
                                                         type: actionTypes.UPDATE_TASK_LENGTH,
                                                         payload: {
@@ -351,59 +307,81 @@ export default function Table({ initialState = [] }) {
                                                             ),
                                                         },
                                                     });
-                                                    dispatch2({
+                                                    dispatch({
                                                         type: actionTypes.TOGGLE_EDITING_LENGTH,
                                                         payload: {
                                                             index: index,
                                                         },
                                                     });
-                                                }
-                                            }}
-                                        />
-                                    )}
-                                </td>
+                                                }}
+                                                onKeyUp={(e) => {
+                                                    if (e.key === "Enter") {
+                                                        e.preventDefault();
+                                                        dispatch({
+                                                            type: actionTypes.UPDATE_TASK_LENGTH,
+                                                            payload: {
+                                                                index: index,
+                                                                length: parseInt(
+                                                                    e.target
+                                                                        .value ||
+                                                                        0
+                                                                ),
+                                                            },
+                                                        });
+                                                        dispatch({
+                                                            type: actionTypes.TOGGLE_EDITING_LENGTH,
+                                                            payload: {
+                                                                index: index,
+                                                            },
+                                                        });
+                                                    }
+                                                }}
+                                            />
+                                        )}
+                                    </td>
 
-                                <td>
-                                    {/* select from previous tasks */}
-                                    <div className="flex flex-row flex-wrap">
-                                        <MultiSelect
-                                            style={{
-                                                width: "100%",
-                                            }}
-                                            data={data
-                                                .filter(
-                                                    (n) =>
-                                                        task.key !== n.key &&
-                                                        !n.dependsOn?.includes(
-                                                            task.key
-                                                        )
-                                                )
-                                                .map((task) => ({
-                                                    label: task.text,
-                                                    value: task.key,
-                                                }))}
-                                            value={task.dependsOn || []}
-                                            onChange={(value) => {
-                                                dispatch({
-                                                    type: actionTypes.UPDATE_TASK_DEPENDS_ON,
-                                                    payload: {
-                                                        index: index,
-                                                        dependsOn: value,
-                                                    },
-                                                });
-                                            }}
-                                            placeholder={
-                                                !task.dependsOn ||
-                                                task.dependsOn.length === 0
-                                                    ? "None"
-                                                    : ""
-                                            }
-                                            hidePickedOptions
-                                        />
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
+                                    <td>
+                                        {/* select from previous tasks */}
+                                        <div className="flex flex-row flex-wrap">
+                                            <MultiSelect
+                                                style={{
+                                                    width: "100%",
+                                                }}
+                                                data={data.tasks
+                                                    .filter(
+                                                        (n) =>
+                                                            task.key !==
+                                                                n.key &&
+                                                            !n.dependsOn?.includes(
+                                                                task.key
+                                                            )
+                                                    )
+                                                    .map((task) => ({
+                                                        label: task.text,
+                                                        value: task.key,
+                                                    }))}
+                                                value={task.dependsOn || []}
+                                                onChange={(value) => {
+                                                    dispatch({
+                                                        type: actionTypes.UPDATE_TASK_DEPENDS_ON,
+                                                        payload: {
+                                                            index: index,
+                                                            dependsOn: value,
+                                                        },
+                                                    });
+                                                }}
+                                                placeholder={
+                                                    !task.dependsOn ||
+                                                    task.dependsOn.length === 0
+                                                        ? "None"
+                                                        : ""
+                                                }
+                                                hidePickedOptions
+                                            />
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
                         {/* add new task */}
                     </tbody>
                     <tfoot>
@@ -414,7 +392,7 @@ export default function Table({ initialState = [] }) {
                                     colorScheme="purple"
                                     onClick={() => {
                                         let index = data.length + 1;
-                                        dispatch2({
+                                        dispatch({
                                             type: actionTypes.ADD_TASK_EDITABLE,
                                         });
                                         dispatch({
@@ -440,7 +418,7 @@ export default function Table({ initialState = [] }) {
                                     isDisabled={saved}
                                     leftIcon={<IoIosSave />}
                                     onClick={() => {
-                                        updateProject({ tasks: data });
+                                        updateProject({ tasks: data.tasks });
                                     }}
                                     className="bg-purple-500 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-md transition duration-100 ease-in-out"
                                 >
@@ -460,7 +438,7 @@ export default function Table({ initialState = [] }) {
                 }}
             >
                 <PertChart
-                    data={data}
+                    data={data.tasks}
                     containerWidth={600}
                     containerHeight={400}
                 />
