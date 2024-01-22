@@ -29,8 +29,7 @@ import { BsDiagram3Fill } from "react-icons/bs";
 import { IoIosArrowBack, IoIosSave } from "react-icons/io";
 import { MdContentCopy } from "react-icons/md";
 import { FaLongArrowAltRight } from "react-icons/fa";
-import "gantt-task-react/dist/index.css";
-import { Gantt } from "gantt-task-react";
+import Gantt from "components/GanttChart";
 import calculateDates from "./calculateDates";
 
 import axios from "axios";
@@ -540,11 +539,30 @@ const ProjectDetails = () => {
 
                         <TabPanels height={"full"}>
                             <TabPanel height={"full"} pl={0} pr={0}>
+                                {data.tasks.length === 0 && (
+                                    <p
+                                        style={{
+                                            textAlign: "center",
+                                            paddingTop: "100px",
+                                            marginBottom: "-100px",
+                                            fontSize: "20px",
+                                            color: "#8484A9",
+                                            fontWeight: "bold",
+                                            fontFamily: "sans-serif",
+                                            letterSpacing: "1px",
+                                        }}
+                                    >
+                                        No tasks to display. Please add a task
+                                        to see the Pert Chart.
+                                    </p>
+                                )}
                                 <Flex
                                     ref={chartContainer}
                                     w={"100%"}
                                     h={"100%"}
-                                    className="pert-chart"
+                                    className={`pert-chart ${
+                                        data.tasks.length === 0 ? "hidden" : ""
+                                    }`}
                                 >
                                     <PertChart
                                         data={data.tasks}
@@ -557,32 +575,45 @@ const ProjectDetails = () => {
                                 </Flex>
                             </TabPanel>
                             <TabPanel>
-                                {/* show loading screen before gantt */}
-                                {ganttData.length !== 0 ? (
-                                    <Box
-                                        position="relative"
-                                        w={"100%"}
-                                        h={"100%"}
-                                        className="gantt-chart"
-                                    >
-                                        <Gantt
-                                            barBackgroundColor="#8484A9"
-                                            tasks={ganttData}
-                                            listCellWidth=""
-                                            barCornerRadius={5}
-                                            columnWidth={80}
-                                            viewMode="Day"
-                                            fontSize={18}
-                                            barFill={70}
-                                        />
-                                    </Box>
-                                ) : (
-                                    <p>Loading..</p>
-                                )}
+                                <Box
+                                    position="relative"
+                                    w={"100%"}
+                                    h={"100%"}
+                                    className="gantt-chart"
+                                >
+                                    <Gantt ganttData={ganttData} />
+                                </Box>
                             </TabPanel>
                             <TabPanel>
+                                {data.tasks.length === 0 && (
+                                    <p
+                                        style={{
+                                            textAlign: "center",
+                                            paddingTop: "100px",
+                                            marginBottom: "-100px",
+                                            fontSize: "20px",
+                                            color: "#8484A9",
+                                            fontWeight: "bold",
+                                            fontFamily: "sans-serif",
+                                            letterSpacing: "1px",
+                                        }}
+                                    >
+                                        No tasks to display. Please add a task
+                                        to see the Floats and Critical Paths.
+                                    </p>
+                                )}
                                 <Flex>
-                                    <Box w={"100%"}>
+                                    <Box
+                                        w={"100%"}
+                                        style={{
+                                            opacity:
+                                                data.tasks.length === 0 ? 0 : 1,
+                                            visibility:
+                                                data.tasks.length === 0
+                                                    ? "hidden"
+                                                    : "visible",
+                                        }}
+                                    >
                                         <Heading as="h3" size="md" mb={4}>
                                             Floats
                                         </Heading>
