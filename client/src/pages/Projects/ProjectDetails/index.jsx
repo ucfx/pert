@@ -29,6 +29,9 @@ import { BsDiagram3Fill } from "react-icons/bs";
 import { IoIosArrowBack, IoIosSave } from "react-icons/io";
 import { MdContentCopy } from "react-icons/md";
 import { FaLongArrowAltRight } from "react-icons/fa";
+import "gantt-task-react/dist/index.css";
+import { Gantt } from "gantt-task-react";
+import calculateDates from "./calculateDates";
 
 import axios from "axios";
 
@@ -168,6 +171,8 @@ const ProjectDetails = () => {
         tasks: [],
         editable: [],
     });
+
+    const ganttData = calculateDates(data.tasks);
 
     const [nodes, levels, links, criticalPaths] = useMemo(() => {
         try {
@@ -506,7 +511,7 @@ const ProjectDetails = () => {
                                 }}
                                 _hover={{ borderColor: "purple.400" }}
                             >
-                                Gant
+                                Gantt
                             </Tab>
                             <Tab
                                 border={"2px solid"}
@@ -541,7 +546,25 @@ const ProjectDetails = () => {
                                 </Flex>
                             </TabPanel>
                             <TabPanel>
-                                <p>Gant</p>
+                                {/* show loading screen before gantt */}
+                                {ganttData.length !== 0 ? (
+                                    <Box
+                                        w={"100%"}
+                                        h={"100%"}
+                                        className="gantt-chart"
+                                    >
+                                        <Gantt
+                                            barBackgroundColor="#8484A9"
+                                            tasks={ganttData}
+                                            listCellWidth=""
+                                            barCornerRadius={5}
+                                            columnWidth={120}
+                                            viewMode="Day"
+                                        />
+                                    </Box>
+                                ) : (
+                                    <p>Loading..</p>
+                                )}
                             </TabPanel>
                             <TabPanel>
                                 <Flex>

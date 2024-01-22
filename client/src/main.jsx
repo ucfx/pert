@@ -9,6 +9,10 @@ import { AuthProvider } from "context/AuthContext";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 
 const theme = extendTheme({
+    config: {
+        initialColorMode: "light",
+        useSystemColorMode: false,
+    },
     colors: {
         purple: {
             50: "#F0F0F5",
