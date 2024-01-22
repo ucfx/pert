@@ -173,6 +173,7 @@ const ProjectDetails = () => {
     });
 
     const ganttData = calculateDates(data.tasks);
+    console.log("gant data is ", ganttData);
 
     const [nodes, levels, links, criticalPaths] = useMemo(() => {
         try {

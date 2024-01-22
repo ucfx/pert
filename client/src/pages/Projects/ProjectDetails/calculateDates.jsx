@@ -35,6 +35,7 @@ function calculateDates(tasks) {
         name: task.text,
         dependencies: task.dependsOn,
         start: task.start,
+        progress: 0,
         end: task.end,
         type: "task",
     }));
