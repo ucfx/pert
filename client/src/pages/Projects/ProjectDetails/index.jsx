@@ -1,4 +1,5 @@
 import { Pert } from "assets/js";
+import React from "react";
 import usePageTitle from "hooks/usePageTitle";
 import { useEffect, useReducer, useState, useMemo, useRef } from "react";
 import {
@@ -13,7 +14,6 @@ import {
     TabPanels,
     Tab,
     TabPanel,
-    TabIndicator,
 } from "@chakra-ui/react";
 import { Drawer } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
@@ -643,11 +643,10 @@ const ProjectDetails = () => {
                                                     >
                                                         {path.map(
                                                             (task, index) => (
-                                                                <>
+                                                                <React.Fragment
+                                                                    key={index}
+                                                                >
                                                                     <span
-                                                                        key={
-                                                                            index
-                                                                        }
                                                                         style={{
                                                                             fontWeight:
                                                                                 "bold",
@@ -666,7 +665,7 @@ const ProjectDetails = () => {
                                                                             }
                                                                         />
                                                                     )}
-                                                                </>
+                                                                </React.Fragment>
                                                             )
                                                         )}
                                                     </Flex>
