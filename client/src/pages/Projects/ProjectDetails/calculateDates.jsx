@@ -4,31 +4,37 @@ function calculateDates(tasks) {
     const today = new Date();
     const taskDates = {};
 
-    const sortedTasks = tasks
-        .slice()
-        .sort(
-            (a, b) => (a.dependsOn?.length || 0) - (b.dependsOn?.length || 0)
+    function calculateTaskDates(task) {
+        if (taskDates[task.key]) return taskDates[task.key];
+
+        const dependenciesDates = task.dependsOn?.map((key) =>
+            calculateTaskDates(tasks.find((t) => t.key === key))
         );
 
-    sortedTasks.forEach((task) => {
-        const dependenciesDates =
-            task.dependsOn?.map((key) => taskDates[key]?.end) || [];
         const startDate =
-            dependenciesDates.length > 0
-                ? new Date(Math.max(...dependenciesDates))
+            dependenciesDates?.length > 0
+                ? new Date(
+                      Math.max(...dependenciesDates.map((d) => d.end.getTime()))
+                  )
                 : today;
+
         const endDate = new Date(
             startDate.getTime() + task.length * 24 * 60 * 60 * 1000
         );
 
-        taskDates[task.key] = {
+        const taskDate = {
             key: task.key,
             text: task.text,
             dependsOn: task.dependsOn,
             start: startDate,
             end: endDate,
         };
-    });
+
+        taskDates[task.key] = taskDate;
+        return taskDate;
+    }
+
+    tasks.forEach((task) => calculateTaskDates(task));
 
     const result = Object.values(taskDates).map((task) => ({
         id: task.key,

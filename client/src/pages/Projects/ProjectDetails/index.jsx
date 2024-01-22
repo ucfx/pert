@@ -175,6 +175,8 @@ const ProjectDetails = () => {
     const ganttData = calculateDates(data.tasks);
     console.log("gant data is ", ganttData);
 
+    console.log("tasks are", data.tasks);
+
     const [nodes, levels, links, criticalPaths] = useMemo(() => {
         try {
             const pert = new Pert(data.tasks).solve();
@@ -559,7 +561,7 @@ const ProjectDetails = () => {
                                             tasks={ganttData}
                                             listCellWidth=""
                                             barCornerRadius={5}
-                                            columnWidth={120}
+                                            columnWidth={80}
                                             viewMode="Day"
                                         />
                                     </Box>
