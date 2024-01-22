@@ -1,6 +1,6 @@
 function calculateDates(tasks) {
     if (!tasks) return [];
-
+    console.log(tasks);
     const today = new Date();
     const taskDates = {};
 
@@ -28,6 +28,7 @@ function calculateDates(tasks) {
             dependsOn: task.dependsOn,
             start: startDate,
             end: endDate,
+            critical: task.critical,
         };
 
         taskDates[task.key] = taskDate;
@@ -44,6 +45,10 @@ function calculateDates(tasks) {
         progress: 0,
         end: task.end,
         type: "task",
+        styles: {
+            backgroundColor: task.critical ? "#dc3545" : "#5e6585",
+            backgroundSelectedColor: task.critical ? "#b43642" : "#3f455d",
+        },
     }));
 
     return result;

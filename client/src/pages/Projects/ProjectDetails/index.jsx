@@ -172,11 +172,6 @@ const ProjectDetails = () => {
         editable: [],
     });
 
-    const ganttData = calculateDates(data.tasks);
-    console.log("gant data is ", ganttData);
-
-    console.log("tasks are", data.tasks);
-
     const [nodes, levels, links, criticalPaths] = useMemo(() => {
         try {
             const pert = new Pert(data.tasks).solve();
@@ -189,6 +184,19 @@ const ProjectDetails = () => {
             return [[], {}, []];
         }
     }, [JSON.stringify(data.tasks)]);
+
+    const ganttData = calculateDates(
+        nodes.slice(1, -1).map((task) => {
+            if (task.level === 1) {
+                delete task.dependsOn;
+            }
+
+            return task;
+        })
+    );
+    console.log("gant data is ", ganttData);
+
+    console.log("tasks are", data.tasks);
 
     useEffect(() => {
         if (project)
@@ -497,10 +505,10 @@ const ProjectDetails = () => {
                                 borderColor={"purple.100"}
                                 _selected={{
                                     color: "white",
-                                    bg: "purple.400",
-                                    borderColor: "purple.400",
+                                    bg: "#434a6f",
+                                    borderColor: "#434a6f",
                                 }}
-                                _hover={{ borderColor: "purple.400" }}
+                                _hover={{ borderColor: "#434a6f" }}
                             >
                                 Pert
                             </Tab>
@@ -509,10 +517,10 @@ const ProjectDetails = () => {
                                 borderColor={"purple.100"}
                                 _selected={{
                                     color: "white",
-                                    bg: "purple.400",
-                                    borderColor: "purple.400",
+                                    bg: "#434a6f",
+                                    borderColor: "#434a6f",
                                 }}
-                                _hover={{ borderColor: "purple.400" }}
+                                _hover={{ borderColor: "#434a6f" }}
                             >
                                 Gantt
                             </Tab>
@@ -521,10 +529,10 @@ const ProjectDetails = () => {
                                 borderColor={"purple.100"}
                                 _selected={{
                                     color: "white",
-                                    bg: "purple.400",
-                                    borderColor: "purple.400",
+                                    bg: "#434a6f",
+                                    borderColor: "#434a6f",
                                 }}
-                                _hover={{ borderColor: "purple.400" }}
+                                _hover={{ borderColor: "#434a6f" }}
                             >
                                 Floats
                             </Tab>
@@ -552,6 +560,7 @@ const ProjectDetails = () => {
                                 {/* show loading screen before gantt */}
                                 {ganttData.length !== 0 ? (
                                     <Box
+                                        position="relative"
                                         w={"100%"}
                                         h={"100%"}
                                         className="gantt-chart"
@@ -563,6 +572,8 @@ const ProjectDetails = () => {
                                             barCornerRadius={5}
                                             columnWidth={80}
                                             viewMode="Day"
+                                            fontSize={18}
+                                            barFill={70}
                                         />
                                     </Box>
                                 ) : (
