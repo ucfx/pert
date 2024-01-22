@@ -104,7 +104,7 @@ const deleteProject = async (req, res) => {
         //     userId: _id,
         // });
 
-        const result = await Project.findOneAndDelete(projectId);
+        const result = await Project.findOneAndDelete({ _id: projectId });
 
         if (result.deletedCount === 0) {
             return res.status(401).json({

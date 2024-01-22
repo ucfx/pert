@@ -16,6 +16,8 @@ import {
 import { AnimatePresence, motion } from "framer-motion";
 import axios from "axios";
 
+import { useNavigate } from "react-router-dom";
+
 const CreateProject = ({
     updateData,
     titleList,
@@ -36,6 +38,8 @@ const CreateProject = ({
 
     const { onOpen, onClose, isOpen } = useDisclosure();
 
+    const navigate = useNavigate();
+
     const createProject = async (data) => {
         const postData = (data) => {
             return new Promise((resolve, reject) => {
@@ -46,6 +50,9 @@ const CreateProject = ({
                         onClose();
                         reset();
                         resolve();
+                        navigate(`./${projects[projects.length - 1]._id}`, {
+                            relative: "path",
+                        });
                     })
                     .catch((err) => {
                         console.log(err);
