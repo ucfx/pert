@@ -29,6 +29,9 @@ import { BsDiagram3Fill } from "react-icons/bs";
 import { IoIosArrowBack, IoIosSave } from "react-icons/io";
 import { MdContentCopy } from "react-icons/md";
 import { FaLongArrowAltRight } from "react-icons/fa";
+import "gantt-task-react/dist/index.css";
+import { Gantt } from "gantt-task-react";
+import calculateDates from "./calculateDates";
 
 import axios from "axios";
 
@@ -181,6 +184,19 @@ const ProjectDetails = () => {
             return [[], {}, []];
         }
     }, [JSON.stringify(data.tasks)]);
+
+    const ganttData = calculateDates(
+        nodes.slice(1, -1).map((task) => {
+            if (task.level === 1) {
+                delete task.dependsOn;
+            }
+
+            return task;
+        })
+    );
+    console.log("gant data is ", ganttData);
+
+    console.log("tasks are", data.tasks);
 
     useEffect(() => {
         if (project)
@@ -489,10 +505,10 @@ const ProjectDetails = () => {
                                 borderColor={"purple.100"}
                                 _selected={{
                                     color: "white",
-                                    bg: "purple.400",
-                                    borderColor: "purple.400",
+                                    bg: "#434a6f",
+                                    borderColor: "#434a6f",
                                 }}
-                                _hover={{ borderColor: "purple.400" }}
+                                _hover={{ borderColor: "#434a6f" }}
                             >
                                 Pert
                             </Tab>
@@ -501,22 +517,22 @@ const ProjectDetails = () => {
                                 borderColor={"purple.100"}
                                 _selected={{
                                     color: "white",
-                                    bg: "purple.400",
-                                    borderColor: "purple.400",
+                                    bg: "#434a6f",
+                                    borderColor: "#434a6f",
                                 }}
-                                _hover={{ borderColor: "purple.400" }}
+                                _hover={{ borderColor: "#434a6f" }}
                             >
-                                Gant
+                                Gantt
                             </Tab>
                             <Tab
                                 border={"2px solid"}
                                 borderColor={"purple.100"}
                                 _selected={{
                                     color: "white",
-                                    bg: "purple.400",
-                                    borderColor: "purple.400",
+                                    bg: "#434a6f",
+                                    borderColor: "#434a6f",
                                 }}
-                                _hover={{ borderColor: "purple.400" }}
+                                _hover={{ borderColor: "#434a6f" }}
                             >
                                 Floats
                             </Tab>
@@ -541,7 +557,28 @@ const ProjectDetails = () => {
                                 </Flex>
                             </TabPanel>
                             <TabPanel>
-                                <p>Gant</p>
+                                {/* show loading screen before gantt */}
+                                {ganttData.length !== 0 ? (
+                                    <Box
+                                        position="relative"
+                                        w={"100%"}
+                                        h={"100%"}
+                                        className="gantt-chart"
+                                    >
+                                        <Gantt
+                                            barBackgroundColor="#8484A9"
+                                            tasks={ganttData}
+                                            listCellWidth=""
+                                            barCornerRadius={5}
+                                            columnWidth={80}
+                                            viewMode="Day"
+                                            fontSize={18}
+                                            barFill={70}
+                                        />
+                                    </Box>
+                                ) : (
+                                    <p>Loading..</p>
+                                )}
                             </TabPanel>
                             <TabPanel>
                                 <Flex>

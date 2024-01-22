@@ -101,11 +101,7 @@ function App() {
                     />
                     <Route
                         path="/"
-                        element={
-                            <>
-                                home <Link to="/login">login</Link>
-                            </>
-                        }
+                        element={<Navigate to={"/login"} replace={true} />}
                     />
                     404
                     <Route path="*" element={<NotFound />} />
