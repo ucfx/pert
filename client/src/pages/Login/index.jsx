@@ -5,6 +5,9 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import useLogin from "hooks/useLogin";
 import { useToast, Button } from "@chakra-ui/react";
+import { FaRegUser } from "react-icons/fa";
+import { MdLockOutline } from "react-icons/md";
+
 const Login = () => {
     const {
         setError,
@@ -68,7 +71,7 @@ const Login = () => {
 
     return (
         <div className="login">
-            <div className="container">
+            <div>
                 <div className="form-container">
                     <div className="form-content">
                         <h1>Login</h1>
@@ -97,7 +100,10 @@ const Login = () => {
                                     name="username"
                                 />
                                 <label>username</label>
-                                <i className="fa-regular fa-user" />
+                                {/* <i className="fa-regular fa-user" /> */}
+                                <i>
+                                    <FaRegUser />
+                                </i>
                                 <span
                                     className={`input-error ${
                                         errors?.username ? "show" : ""
@@ -130,7 +136,9 @@ const Login = () => {
                                     name="password"
                                 />
                                 <label>password</label>
-                                <i className="fa-regular fa-lock" />
+                                <i>
+                                    <MdLockOutline />
+                                </i>
                                 <i
                                     className={`fa-regular fa-eye${
                                         passwordInputType === "text"
