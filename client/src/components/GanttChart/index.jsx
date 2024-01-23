@@ -9,7 +9,6 @@ const GantChart = ({ ganttData }) => {
             barCornerRadius={5}
             columnWidth={80}
             viewMode="Day"
-            fontSize={18}
             barFill={70}
         />
     ) : (

@@ -3,7 +3,7 @@ import { IoMdAdd } from "react-icons/io";
 import useProjectDetails from "hooks/useProjectDetails";
 import { Button } from "@chakra-ui/react";
 import getLetterFromNumber from "./getLetterFromNumber";
-
+import "./style.css";
 export default function Table({ data, actionTypes, dispatch, setSaved }) {
     const { updateData: saveProject } = useProjectDetails();
 
@@ -69,6 +69,7 @@ export default function Table({ data, actionTypes, dispatch, setSaved }) {
                                                 if (e.target.value === "")
                                                     e.target.value =
                                                         task.text || "";
+                                                e.target.select();
                                             }}
                                             onBlur={(e) => {
                                                 if (e.target.value === "")
@@ -139,12 +140,19 @@ export default function Table({ data, actionTypes, dispatch, setSaved }) {
                                         task.length
                                     ) : (
                                         <TextInput
+                                            classNames={{
+                                                input: "border-purple-400 border-1 hover:border-5  focus:border-5 focus:border-blue-500 transition duration-100 ease-in-out",
+                                            }}
+                                            style={{
+                                                width: "100%",
+                                            }}
                                             placeholder="Duration"
                                             type="number"
                                             onFocus={(e) => {
                                                 if (e.target.value === "")
                                                     e.target.value =
                                                         task.length || 0;
+                                                e.target.select();
                                             }}
                                             onBlur={(e) => {
                                                 if (e.target.value === "")
@@ -195,6 +203,14 @@ export default function Table({ data, actionTypes, dispatch, setSaved }) {
                                     {/* select from previous tasks */}
                                     <div className="flex flex-row flex-wrap">
                                         <MultiSelect
+                                            // add box shadow to dropdown
+                                            classNames={{
+                                                dropdown:
+                                                    "bg-purple-50 rounded-md border-purple-300 border-1 shadow-xl",
+                                                option: "hover:bg-purple-100 transition duration-100 ease-in-out",
+                                                pill: "bg-purple-100 border-purple-500 border-1",
+                                                input: "border-purple-400 border-1 hover:border-5 hover:bg-purple-50 transition duration-100 ease-in-out",
+                                            }}
                                             style={{
                                                 width: "100%",
                                             }}

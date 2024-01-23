@@ -574,11 +574,11 @@ const ProjectDetails = () => {
                                     />
                                 </Flex>
                             </TabPanel>
-                            <TabPanel>
+                            <TabPanel h={"full"}>
                                 <Box
                                     position="relative"
                                     w={"100%"}
-                                    h={"100%"}
+                                    h={"full"}
                                     className="gantt-chart"
                                 >
                                     <Gantt ganttData={ganttData} />
@@ -614,6 +614,24 @@ const ProjectDetails = () => {
                                                     : "visible",
                                         }}
                                     >
+                                        <Heading as="h3" size="md" mb={4}>
+                                            Project Duration:
+                                            <Text
+                                                as="span"
+                                                ml={2}
+                                                fontWeight="bold"
+                                                bg={"purple.100"}
+                                                p={2}
+                                                borderRadius={"md"}
+                                            >
+                                                {
+                                                    nodesToDisplay[
+                                                        nodesToDisplay.length -
+                                                            1
+                                                    ]?.earlyFinish
+                                                }
+                                            </Text>
+                                        </Heading>
                                         <Heading as="h3" size="md" mb={4}>
                                             Floats
                                         </Heading>
