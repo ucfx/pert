@@ -263,6 +263,7 @@ const ProjectDetails = () => {
     };
 
     const nodesToDisplay = nodes.slice(1, -1);
+    const projectTime = nodes[nodes.length - 1].earlyFinish;
 
     const taskNames = nodesToDisplay.map((task) => task.text);
     const freeFloats = nodesToDisplay.map((task) => task.freeFloat);
@@ -625,10 +626,7 @@ const ProjectDetails = () => {
                                                 borderRadius={"md"}
                                             >
                                                 {
-                                                    nodesToDisplay[
-                                                        nodesToDisplay.length -
-                                                            1
-                                                    ]?.earlyFinish
+                                                    projectTime
                                                 }
                                             </Text>
                                         </Heading>

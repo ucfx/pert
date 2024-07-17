@@ -3,7 +3,7 @@ import { IoMdAdd } from "react-icons/io";
 import useProjectDetails from "hooks/useProjectDetails";
 import { Button } from "@chakra-ui/react";
 import getLetterFromNumber from "./getLetterFromNumber";
-import "./style.css";
+
 export default function Table({ data, actionTypes, dispatch, setSaved }) {
     const { updateData: saveProject } = useProjectDetails();
 
