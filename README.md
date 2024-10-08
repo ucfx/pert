@@ -6,7 +6,9 @@
 
 ## :pencil: Description
 
-TP GL - Pert Algorithm.
+Implemented the core PERT algorithm, calculating task durations, slack time, and identifying critical paths for project management. 
+
+Developed an algorithm for dynamically drawing the PERT chart on a canvas, ensuring accurate node positioning and dependency mapping.
 
 ## :rocket: Technologies
 
@@ -47,3 +49,10 @@ Run the app (client and server) each in a separate terminal
 ```
 npm start
 ```
+## :camera: Screenshots
+
+<img src="screenshots/1.jpg" />
+<img src="screenshots/2.jpg" />
+<img src="screenshots/3.jpg" />
+<img src="screenshots/4.jpg" />
+<img src="screenshots/5.jpg" />
